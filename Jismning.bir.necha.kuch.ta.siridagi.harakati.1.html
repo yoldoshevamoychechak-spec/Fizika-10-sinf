@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jismning bir necha kuch ta’siridagi harakati — 10-sinf fizika</title>
+<style>
+:root{--ink:#14274e;--paper:#f5f8fc;--card:#fff;--line:#c9d6e8;--acc:#1f5fbf;--F:#1f8a4c;--fr:#d9531e;--N:#2f6fd6;--P:#7a3fb5;--Fn:#e0115f;--ok:#1f8a4c;--bad:#c62828}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;color:var(--ink);line-height:1.55;background:var(--paper);
+background-image:linear-gradient(#e3ebf6 1px,transparent 1px),linear-gradient(90deg,#e3ebf6 1px,transparent 1px);background-size:24px 24px}
+header{background:var(--ink);color:#fff;padding:18px 16px 12px}
+header h1{margin:0;font-size:clamp(1.2rem,4.5vw,1.8rem)}
+header p{margin:4px 0 0;opacity:.85;font-size:.95rem}
+nav{position:sticky;top:0;z-index:5;display:flex;gap:6px;overflow-x:auto;background:var(--ink);padding:0 10px 10px}
+nav button{flex:none;border:0;border-radius:8px;padding:10px 14px;font:inherit;font-weight:700;background:#2a4378;color:#fff;cursor:pointer;min-height:44px}
+nav button.on{background:#fff;color:var(--ink)}
+main{max-width:980px;margin:0 auto;padding:14px}
+.sec{display:none}.sec.on{display:block}
+h2{font-size:1.35rem;margin:6px 0 10px}h3{margin:14px 0 6px;font-size:1.05rem}
+.card{background:var(--card);border:2px solid var(--line);border-radius:12px;padding:14px;margin:0 0 14px}
+.formula{display:block;background:#eef4ff;border-left:5px solid var(--acc);padding:6px 12px;margin:6px 0;font-weight:700;font-family:Georgia,serif;font-size:1.05rem;overflow-x:auto}
+.live{background:#fff8e1;border-left-color:#f2b33d}
+canvas{display:block;width:100%;border:1px solid var(--line);border-radius:8px;background:#fbfdff;touch-action:manipulation}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+button.b{font:inherit;font-weight:700;border:2px solid var(--ink);background:#fff;color:var(--ink);border-radius:8px;padding:10px 16px;cursor:pointer;min-height:44px}
+button.b.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+button.b.on{background:var(--ink);color:#fff}
+button:focus-visible,input:focus-visible{outline:3px solid #f2b33d;outline-offset:2px}
+.sl{display:flex;flex-direction:column;gap:2px;margin:10px 0}.sl[hidden]{display:none}.sl.off{opacity:.45}
+.sl input{width:100%;height:32px;accent-color:var(--acc)}
+.grid{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:760px){.grid{grid-template-columns:1.5fr 1fr}.two{grid-template-columns:1fr 1fr}}
+.res{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:.95rem}
+.res span:nth-child(odd){border-bottom:1px dotted var(--line)}
+.res span:nth-child(even){text-align:right;font-weight:700;border-bottom:1px dotted var(--line)}
+.status{font-weight:800;padding:8px 12px;border-radius:8px;background:#e8f3ec;color:var(--ok);margin:8px 0;min-height:40px}
+.status.warn{background:#fdeee8;color:var(--fr)}
+.tip{min-height:48px;background:#f0eaf8;border-radius:8px;padding:8px 12px;margin-top:8px}
+.chk{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0}.chk label{display:flex;align-items:center;gap:6px;min-height:36px}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:420px}
+th,td{border:2px solid var(--line);padding:8px;text-align:left}th{background:var(--ink);color:#fff}
+.cmpbox{display:none}.cmp .cmpbox{display:block}.cmp .single{display:none}
+.opt{display:flex;gap:8px;align-items:center;padding:10px;border:2px solid var(--line);border-radius:8px;margin:6px 0;cursor:pointer;min-height:44px}
+.opt.ok{border-color:var(--ok);background:#e8f3ec}.opt.no{border-color:var(--bad);background:#fdecea}
+.big{font-size:1.25rem;font-weight:800;text-align:center;background:var(--ink);color:#fff;border-radius:12px;padding:16px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:4px}
+</style>
+</head>
+<body>
+<header><h1>Jismning bir necha kuch ta’siridagi harakati</h1><p>10-sinf fizika · interaktiv simulyatsiya</p></header>
+<nav id="nav">
+<button class="on" data-t="s1">1. Gorizontal sirt</button><button data-t="s2">2. Bloklar</button>
+<button data-t="s3">Tajriba</button><button data-t="s4">Test</button><button data-t="s5">Xulosa</button>
+</nav>
+<main>
+
+<!-- ============ 1-BO‘LIM ============ -->
+<section id="s1" class="sec on">
+<h2>1-bo‘lim. Jismning gorizontal sirtdagi harakati</h2>
+<div class="card">
+<p>Jismga bir vaqtning o‘zida bir nechta kuch ta’sir qilishi mumkin. Gorizontal sirtda harakatlanayotgan jismga: og‘irlik kuchi, tayanch reaksiyasi, tashqi kuch va ishqalanish kuchi ta’sir qiladi.</p>
+<span class="formula">P = mg &nbsp; (og‘irlik kuchi)</span>
+<span class="formula">F<sub>ishq</sub> = μN &nbsp; (ishqalanish kuchi)</span>
+<span class="formula">Vertikal tezlanish yo‘q bo‘lsa: N = mg</span>
+<span class="formula">F<sub>nat</sub> = F − F<sub>ishq</sub> &nbsp;,&nbsp; a = F<sub>nat</sub> / m</span>
+<p>Bu yerda: m — massa (kg); g = 9,8 m/s²; N — tayanch reaksiyasi (N); F — tashqi kuch (N); μ — ishqalanish koeffitsiyenti.</p>
+<p><b>F &gt; F<sub>ishq</sub></b> bo‘lsa jism tezlanadi. <b>F = F<sub>ishq</sub></b> bo‘lsa F<sub>nat</sub> = 0: jism tinch bo‘lsa tinch qoladi, harakatda bo‘lsa tekis harakat qiladi. <b>F &lt; F<sub>ishq</sub></b> bo‘lsa harakat sekinlashadi.</p>
+</div>
+<div class="row" id="modes">
+<button class="b on" data-m="0">1-sim: Ishqalanishsiz</button><button class="b" data-m="1">2-sim: Ishqalanish bilan</button><button class="b" data-m="2">3-sim: Qarama-qarshi kuchlar</button>
+</div>
+<div class="grid">
+<div class="card">
+<canvas id="c1"></canvas>
+<div class="legend"><i style="background:var(--F)"></i>F &nbsp;<i style="background:var(--fr)"></i>F<sub>ishq</sub>/F₂ &nbsp;<i style="background:var(--N)"></i>N &nbsp;<i style="background:var(--P)"></i>P &nbsp;<i style="background:var(--Fn)"></i>F<sub>nat</sub> (qalin). Strelka uzunligi kuchga proporsional.</div>
+<div class="row ctrl" id="k1"></div>
+<div id="sl1"></div>
+</div>
+<div class="card"><h3>Natijalar</h3><div class="status" id="st1"></div><div class="res" id="r1"></div>
+<span class="formula live" id="f1"></span><span class="formula live" id="f1b"></span></div>
+</div>
+<div class="card"><h3>Erkin jism diagrammasi</h3>
+<div class="grid two"><div><canvas id="cf"></canvas></div>
+<div><div class="chk" id="chk"></div><p>Kuch strelkasini bosing — qisqa izoh chiqadi.</p><div class="tip" id="tip">Izoh shu yerda ko‘rinadi.</div></div></div></div>
+<div class="card"><h3>1-bo‘lim xulosasi</h3><p>Jismga ta’sir qilayotgan barcha kuchlarning vektor yig‘indisi natijaviy kuchni beradi.</p>
+<span class="formula">F<sub>nat</sub> = ΣF</span><p>Natijaviy kuch jismning tezlanishini aniqlaydi:</p><span class="formula">a = F<sub>nat</sub> / m</span></div>
+</section>
+
+<!-- ============ 2-BO‘LIM ============ -->
+<section id="s2" class="sec">
+<h2>2-bo‘lim. Ko‘chmas va ko‘char bloklar</h2>
+<div class="card">
+<p>Blok — arqon yordamida yuklarni ko‘tarish yoki kuch yo‘nalishini o‘zgartirish uchun mexanik qurilma. <b>Ko‘chmas blok</b>ning o‘qi mahkamlangan: u kuch yo‘nalishini o‘zgartiradi, ideal holda F = mg. <b>Ko‘char blok</b> yuk bilan birga harakatlanadi: ideal holda F = mg/2, ya’ni kuchdan 2 marta yutuq, lekin arqon uchi yuk ko‘tarilgan masofadan 2 marta ko‘p yo‘l bosadi.</p>
+<span class="formula">Ko‘chmas: F = mg</span><span class="formula">Ko‘char: F = mg/2 &nbsp;,&nbsp; s<sub>arqon</sub> = 2h</span>
+<p><b>Muhim:</b> ideal bloklarda ishqalanish va arqon massasi hisobga olinmaydi. Haqiqiy bloklarda yo‘qotishlar bo‘ladi.</p>
+</div>
+<div class="row" id="btype"><button class="b on" data-ty="fix">Ko‘chmas blok</button><button class="b" data-ty="mov">Ko‘char blok</button><button class="b pri" id="cmpbtn">TAQQOSLASH</button></div>
+<div class="grid" id="s2box">
+<div class="card">
+<div class="single"><canvas id="cb"></canvas></div>
+<div class="cmpbox"><div class="grid two"><div><b>Ko‘chmas blok</b><canvas id="cb1"></canvas></div><div><b>Ko‘char blok</b><canvas id="cb2"></canvas></div></div>
+<div class="tw"><table><tr><th>Kattalik</th><th>Ko‘chmas blok</th><th>Ko‘char blok</th></tr>
+<tr><td>Kuchdan yutuq</td><td>1 marta</td><td>2 marta</td></tr><tr><td>Kuch</td><td>F = mg</td><td>F = mg/2</td></tr>
+<tr><td>Kuch yo‘nalishi</td><td>O‘zgaradi</td><td>O‘zgarishi mumkin</td></tr><tr><td>Yuk yo‘li</td><td>h</td><td>h</td></tr><tr><td>Arqon yo‘li</td><td>h</td><td>2h</td></tr></table></div></div>
+<div class="row ctrl" id="k2"></div><div id="sl2"></div>
+</div>
+<div class="card"><h3>Natijalar</h3><div class="status" id="st2"></div><div class="res" id="r2"></div></div>
+</div>
+</section>
+
+<!-- ============ TAJRIBA ============ -->
+<section id="s3" class="sec">
+<h2>TAJRIBANI O‘ZING BAJAR</h2>
+<div class="row" id="emode"><button class="b on" data-e="h">Gorizontal sirt</button><button class="b" data-e="fix">Ko‘chmas blok</button><button class="b" data-e="mov">Ko‘char blok</button></div>
+<div class="grid">
+<div class="card"><canvas id="ce"></canvas><div class="row ctrl" id="k3"></div><div id="sl3"></div>
+<p id="enote" style="font-size:.9rem"></p></div>
+<div class="card"><h3>Natijalar</h3><div class="status" id="st3"></div><div class="res" id="r3"></div></div>
+</div>
+</section>
+
+<!-- ============ TEST ============ -->
+<section id="s4" class="sec"><h2>BILIMINGIZNI SINANG</h2><div class="card" id="quiz"></div></section>
+
+<!-- ============ XULOSA ============ -->
+<section id="s5" class="sec"><h2>Yakuniy xulosa</h2><div class="card">
+<span class="formula">1. F<sub>nat</sub> = ΣF — harakatni natijaviy kuch belgilaydi.</span>
+<span class="formula">2. a = F<sub>nat</sub> / m</span>
+<span class="formula">3. Ishqalanish bo‘lsa: F<sub>ishq</sub> = μN</span>
+<span class="formula">4. Ko‘chmas blok: F = mg, kuch yo‘nalishini o‘zgartiradi.</span>
+<span class="formula">5. Ideal ko‘char blok: F = mg/2 — kuchdan 2 marta yutuq.</span>
+<span class="formula">6. Kuchdan yutuq masofadan yutqazish hisobiga olinadi.</span>
+<div class="big">JISMNING HARAKATINI TUSHUNISH UCHUN UNGA TA’SIR QILAYOTGAN BARCHA KUCHLARNI ANIQLASH VA ULARNING NATIJAVIY KUCHINI TOPISH KERAK.</div></div></section>
+</main>
+
+<script>
+"use strict";
+/* ================= UMUMIY YORDAMCHI FUNKSIYALAR ================= */
+const g = 9.8, INK = '#14274e';
+const COL = {F:'#1f8a4c', fr:'#d9531e', N:'#2f6fd6', P:'#7a3fb5', Fn:'#e0115f'};
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const num = x => (isFinite(x) ? x : 0);
+// Son formati: o‘nli kasr vergul bilan, NaN/Infinity chiqmaydi
+function fmt(x, d = 2){ let s = (+num(x).toFixed(d)).toString(); if (s === '-0') s = '0'; return s.replace('.', ','); }
+const vis = cv => cv.parentElement.clientWidth > 0;
+// Canvas o‘lchamini moslash (retina uchun)
+function fit(cv, h){
+  const w = cv.parentElement.clientWidth, d = window.devicePixelRatio || 1;
+  if (cv._w === w) return cv.getContext('2d');
+  cv._w = w; cv.style.height = h + 'px'; cv.width = w * d; cv.height = h * d;
+  const x = cv.getContext('2d'); x.setTransform(d, 0, 0, d, 0, 0); return x;
+}
+// Strelka: uzunligi kuchga proporsional bo‘lishi uchun chaqiruvchi hisoblaydi
+function arrow(x, x1, y1, x2, y2, col, lw, lab){
+  const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy);
+  if (L < 3) return;
+  x.strokeStyle = x.fillStyle = col; x.lineWidth = lw;
+  x.beginPath(); x.moveTo(x1, y1); x.lineTo(x2, y2); x.stroke();
+  const a = Math.atan2(dy, dx), s = 8 + lw * 1.5;
+  x.beginPath(); x.moveTo(x2, y2);
+  x.lineTo(x2 - s * Math.cos(a - .4), y2 - s * Math.sin(a - .4));
+  x.lineTo(x2 - s * Math.cos(a + .4), y2 - s * Math.sin(a + .4)); x.closePath(); x.fill();
+  if (lab){ x.font = 'bold 13px system-ui'; x.textAlign = 'center'; x.fillText(lab, x2 + dx / L * 22, y2 + dy / L * 14 + 4); }
+}
+// Slider yaratish
+function mk(box, defs){
+  box.innerHTML = defs.map(d => `<label class="sl" data-k="${d.k}"><span>${d.t} <b></b> ${d.u}</span><input type="range" min="${d.min}" max="${d.max}" step="${d.step}" value="${d.v}"></label>`).join('');
+  const el = {};
+  box.querySelectorAll('label').forEach(l => {
+    const i = l.querySelector('input'), b = l.querySelector('b'), up = () => b.textContent = fmt(+i.value);
+    i.addEventListener('input', up); up(); el[l.dataset.k] = {l, i, up};
+  });
+  return {v: k => +el[k].i.value, set(k, x){ el[k].i.value = x; el[k].up(); },
+    show(k, s){ el[k].l.hidden = !s; }, dis(k, s){ el[k].i.disabled = s; el[k].l.classList.toggle('off', s); }};
+}
+// Boshlash / Pauza / Qayta boshlash tugmalari
+function ctrl(box, onStart, onPause, onReset){
+  box.innerHTML = '<button class="b pri">Boshlash</button><button class="b">Pauza</button><button class="b">Qayta boshlash</button>';
+  const [a, b, c] = box.querySelectorAll('button'); a.onclick = onStart; b.onclick = onPause; c.onclick = onReset;
+  if (reduce){ a.textContent = 'Qadam (0,5 s)'; }
+}
+const panel = (el, rows) => el.innerHTML = rows.filter(Boolean).map(r => `<span>${r[0]}</span><span>${r[1]} ${r[2] || ''}</span>`).join('');
+
+/* ================= GORIZONTAL SIRT FIZIKASI ================= */
+// S: {m,F1,F2,mu,x,v,t,run}. Ishqalanish: tinchlikda F bilan muvozanatlashadi (maks. μN), harakatda μN
+function calc(S){
+  const m = Math.max(S.m, .001), N = m * g, fm = S.mu * N, Fa = S.F1 - S.F2;
+  let fr;
+  if (Math.abs(S.v) < 1e-6) fr = Math.abs(Fa) <= fm ? -Fa : -Math.sign(Fa) * fm;
+  else fr = -Math.sign(S.v) * fm;
+  const Fn = Fa + fr;
+  return {m, N, P: N, fm, fr, Fa, Fn, a: Fn / m};
+}
+function stepH(S, dt){
+  const c = calc(S), v0 = S.v;
+  S.v += c.a * dt;
+  if (v0 !== 0 && v0 * S.v < 0) S.v = 0;        // ishqalanish jismni to‘xtatdi
+  if (Math.abs(S.v) < 1e-9) S.v = 0;
+  S.x += S.v * dt; S.t += dt;
+}
+function drawH(cv, S){
+  if (!vis(cv)) return;
+  const H = 270, x = fit(cv, H), w = cv._w, c = calc(S);
+  x.clearRect(0, 0, w, H);
+  const gy = H - 56, bs = 64, cx = w / 2, cy = gy - bs / 2, ps = 40;
+  x.fillStyle = '#dfe8f3'; x.fillRect(0, gy, w, H - gy);
+  x.strokeStyle = INK; x.lineWidth = 2; x.beginPath(); x.moveTo(0, gy); x.lineTo(w, gy); x.stroke();
+  x.font = '11px system-ui'; x.fillStyle = INK; x.textAlign = 'center'; x.lineWidth = 1;
+  for (let X = Math.floor(S.x - cx / ps); X <= Math.ceil(S.x + cx / ps); X++){      // harakatlanuvchi shkala
+    const px = cx + (X - S.x) * ps; x.beginPath(); x.moveTo(px, gy); x.lineTo(px, gy + 7); x.stroke();
+    if (X % 2 === 0) x.fillText(X + ' m', px, gy + 20);
+  }
+  x.fillStyle = '#f2b33d'; x.strokeStyle = INK; x.lineWidth = 2; x.fillRect(cx - bs / 2, gy - bs, bs, bs); x.strokeRect(cx - bs / 2, gy - bs, bs, bs);
+  x.fillStyle = INK; x.font = 'bold 13px system-ui'; x.textAlign = 'center'; x.fillText('m = ' + fmt(S.m, 1) + ' kg', cx, cy - 22);
+  const mx = Math.max(c.N, Math.abs(S.F1), S.F2, Math.abs(c.fr), Math.abs(c.Fn), 1), k = Math.min(1.6, 60 / mx);
+  const R = cx + bs / 2, Lf = cx - bs / 2, top = gy - bs;
+  const sh = S.sh || {N:1, P:1, F:1, fr:1, Fn:1};
+  if (sh.N) arrow(x, cx - 14, top, cx - 14, top - c.N * k, COL.N, 3, 'N');
+  if (sh.P) arrow(x, cx - 14, cy, cx - 14, cy + c.P * k, COL.P, 3, 'P');
+  if (sh.F){ arrow(x, R, cy - 14, R + S.F1 * k, cy - 14, COL.F, 3, S.two ? 'F₁' : 'F');
+    if (S.two) arrow(x, Lf, cy - 14, Lf - S.F2 * k, cy - 14, COL.fr, 3, 'F₂'); }
+  if (sh.fr && !S.two) arrow(x, cx + 6, cy + 18, cx + 6 + c.fr * k, cy + 18, COL.fr, 3, 'F_ishq');
+  if (sh.Fn) arrow(x, cx, gy + 40, cx + c.Fn * k, gy + 40, COL.Fn, 6, 'F_nat');
+}
+function infoH(S, ids){
+  const c = calc(S), bal = Math.abs(c.Fn) < 1e-6, st = $(ids.st);
+  st.textContent = bal ? 'Muvozanatlashgan kuchlar' + (S.v === 0 ? ' (jism tinch turibdi)' : ' (tekis harakat)')
+    : (c.Fn > 0 ? 'Natijaviy kuch o‘ngga yo‘nalgan — jism o‘ngga tezlanmoqda' : 'Natijaviy kuch chapga yo‘nalgan — jism chapga tezlanmoqda / sekinlashmoqda');
+  st.classList.toggle('warn', !bal);
+  panel($(ids.r), [['Massa m', fmt(S.m, 1), 'kg'], ['Og‘irlik P = mg', fmt(c.P), 'N'], ['Tayanch reaksiyasi N', fmt(c.N), 'N'],
+    ['Tashqi kuch ' + (S.two ? 'F₁' : 'F'), fmt(S.F1), 'N'], S.two ? ['Qarama-qarshi kuch F₂', fmt(S.F2), 'N'] : null,
+    ['Ishqalanish F_ishq', fmt(Math.abs(c.fr)), 'N'], ['Natijaviy kuch F_nat', fmt(c.Fn), 'N'], ['Tezlanish a', fmt(c.a), 'm/s²'],
+    ['Tezlik v', fmt(S.v), 'm/s'], ['Masofa x', fmt(S.x), 'm'], ['Vaqt t', fmt(S.t, 1), 's']]);
+  if (ids.f){
+    $(ids.f).innerHTML = S.two ? `F_nat = F₁ − F₂ = ${fmt(S.F1)} − ${fmt(S.F2)} = ${fmt(c.Fa)} N` : `F_nat = F − F_ishq = ${fmt(S.F1)} − ${fmt(Math.abs(c.fr))} = ${fmt(c.Fn)} N`;
+    $(ids.f2).innerHTML = `a = F_nat/m = ${fmt(c.Fn)}/${fmt(S.m, 1)} = ${fmt(c.a)} m/s²`;
+  }
+}
+
+/* ---- 1-bo‘lim sahnasi ---- */
+const S1 = {m:5, F1:10, F2:0, mu:0, x:0, v:0, t:0, run:false, two:false, mode:0, sh:{N:1, P:1, F:1, fr:1, Fn:1}};
+const ui1 = mk($('#sl1'), [
+  {k:'m', t:'Massa m =', u:'kg', min:1, max:20, step:.5, v:5},
+  {k:'F1', t:'Tashqi kuch F =', u:'N', min:0, max:100, step:1, v:10},
+  {k:'F2', t:'Qarama-qarshi kuch F₂ =', u:'N', min:0, max:100, step:1, v:10},
+  {k:'mu', t:'Ishqalanish koeffitsiyenti μ =', u:'', min:0, max:1, step:.05, v:.2}]);
+const MODES = [{m:5, F1:10, F2:0, mu:0}, {m:5, F1:30, F2:0, mu:.2}, {m:5, F1:30, F2:10, mu:0}];
+function resetH(S){ S.x = 0; S.v = 0; S.t = 0; S.run = false; }
+function setMode(i){
+  const d = MODES[i]; S1.mode = i; S1.two = i === 2;
+  ['m', 'F1', 'F2', 'mu'].forEach(k => ui1.set(k, d[k === 'F1' ? 'F1' : k]));
+  ui1.show('F2', i === 2); ui1.show('mu', i === 1); resetH(S1);
+  $$('#modes button').forEach(b => b.classList.toggle('on', +b.dataset.m === i));
+}
+$$('#modes button').forEach(b => b.onclick = () => setMode(+b.dataset.m));
+function syncH(S, ui, useMu){ S.m = ui.v('m'); S.F1 = ui.v('F1'); S.F2 = S.two ? ui.v('F2') : 0; S.mu = useMu ? ui.v('mu') : 0; }
+const startH = S => () => { if (reduce){ for (let i = 0; i < 5; i++) stepH(S, .1); } else S.run = true; };
+ctrl($('#k1'), startH(S1), () => S1.run = false, () => resetH(S1));
+setMode(0);
+
+/* ---- Erkin jism diagrammasi ---- */
+const TIPS = {
+  N:'Tayanch reaksiyasi N: sirt jismni yuqoriga itaradi. Vertikal tezlanish bo‘lmasa N = mg.',
+  P:'Og‘irlik kuchi P = mg: Yer jismni pastga tortadi.',
+  F:'Tashqi kuch F: jismni tortadi yoki itaradi. Ikkinchi qarama-qarshi kuch F₂ unga qarshi yo‘nalgan.',
+  fr:'Ishqalanish kuchi F_ishq = μN: u harakatga (yoki harakatlanishga urinishga) qarshi yo‘nalgan.',
+  Fn:'Natijaviy kuch F_nat = ΣF: barcha kuchlarning vektor yig‘indisi. Tezlanish a = F_nat/m.'};
+const cf = $('#cf'); let segs = [];
+$('#chk').innerHTML = [['N', 'N'], ['P', 'P = mg'], ['F', 'F (F₁, F₂)'], ['fr', 'F_ishq'], ['Fn', 'F_nat']].map(a => `<label><input type="checkbox" data-k="${a[0]}" checked> ${a[1]}</label>`).join('');
+$$('#chk input').forEach(i => i.onchange = () => S1.sh[i.dataset.k] = i.checked ? 1 : 0);
+function drawFBD(){
+  if (!vis(cf)) return;
+  const H = 240, x = fit(cf, H), w = cf._w, c = calc(S1), cx = w / 2, cy = 105, s = 28; segs = [];
+  x.clearRect(0, 0, w, H);
+  x.fillStyle = '#f2b33d'; x.strokeStyle = INK; x.lineWidth = 2; x.fillRect(cx - s, cy - s, 2 * s, 2 * s); x.strokeRect(cx - s, cy - s, 2 * s, 2 * s);
+  x.fillStyle = INK; x.font = 'bold 12px system-ui'; x.textAlign = 'center'; x.fillText('JISM', cx, cy + 4);
+  const mx = Math.max(c.N, Math.abs(S1.F1), S1.F2, Math.abs(c.fr), Math.abs(c.Fn), 1), k = Math.min(1.2, 62 / mx), sh = S1.sh;
+  const add = (id, x1, y1, x2, y2, col, lw, lab) => { if (!sh[id]) return; arrow(x, x1, y1, x2, y2, col, lw, lab); segs.push({id, x1, y1, x2, y2}); };
+  add('N', cx, cy - s, cx, cy - s - c.N * k, COL.N, 3, 'N');
+  add('P', cx, cy + s, cx, cy + s + c.P * k, COL.P, 3, 'P = mg');
+  add('F', cx + s, cy, cx + s + S1.F1 * k, cy, COL.F, 3, S1.two ? 'F₁' : 'F');
+  if (S1.two) add('F', cx - s, cy - 10, cx - s - S1.F2 * k, cy - 10, COL.fr, 3, 'F₂');
+  else add('fr', cx - s, cy + 10, cx - s + c.fr * k + (c.fr >= 0 ? 0 : 0), cy + 10, COL.fr, 3, 'F_ishq');
+  add('Fn', cx, H - 22, cx + c.Fn * k, H - 22, COL.Fn, 6, 'F_nat');
+}
+function dseg(px, py, s){ const dx = s.x2 - s.x1, dy = s.y2 - s.y1, L = dx * dx + dy * dy || 1, t = Math.max(0, Math.min(1, ((px - s.x1) * dx + (py - s.y1) * dy) / L)); return Math.hypot(px - s.x1 - t * dx, py - s.y1 - t * dy); }
+cf.addEventListener('pointerdown', e => {
+  const r = cf.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top;
+  const hit = segs.find(s => dseg(px, py, s) < 14);
+  $('#tip').textContent = hit ? TIPS[hit.id] : 'Strelkaning o‘zini bosing.';
+});
+
+/* ================= BLOKLAR ================= */
+// B: {type, m, h (maqsad), d (ko‘tarilgan masofa), v, run, dyn, F}
+function drawBlk(cv, type, d, m, Fs){
+  if (!vis(cv)) return;
+  const H = 440, x = fit(cv, H), w = cv._w, cx = w / 2, ps = 36, dd = d * ps, P = m * g, mov = type === 'mov';
+  x.clearRect(0, 0, w, H);
+  x.fillStyle = '#c9d3e3'; x.fillRect(cx - 70, 0, 140, 14); x.strokeStyle = INK; x.lineWidth = 2; x.beginPath(); x.moveTo(cx - 70, 14); x.lineTo(cx + 70, 14); x.stroke();
+  const line = (a, b, c2, d2) => { x.strokeStyle = INK; x.lineWidth = 3; x.beginPath(); x.moveTo(a, b); x.lineTo(c2, d2); x.stroke(); };
+  const rope = f => { x.strokeStyle = '#8a5a2b'; x.lineWidth = 3; x.beginPath(); f(); x.stroke(); };
+  const wheel = (px, py, r) => { x.fillStyle = '#e8eef7'; x.strokeStyle = INK; x.lineWidth = 2; x.beginPath(); x.arc(px, py, r, 0, 7); x.fill(); x.stroke(); x.fillStyle = INK; x.beginPath(); x.arc(px, py, 3, 0, 7); x.fill(); };
+  let lx, ly, hx, hy;
+  if (!mov){
+    lx = cx - 22; ly = 190 - dd; hx = cx + 22; hy = 190 + dd;
+    line(cx, 14, cx, 60);
+    rope(() => { x.moveTo(lx, ly); x.lineTo(lx, 60); x.arc(cx, 60, 22, Math.PI, 2 * Math.PI); x.lineTo(hx, hy); });
+    wheel(cx, 60, 22);
+  } else {
+    const yP = 170 - dd; lx = cx; ly = yP + 50; hx = cx + 48; hy = 190 + 2 * dd;
+    line(cx + 34, 14, cx + 34, 60);
+    rope(() => { x.moveTo(cx - 20, 14); x.lineTo(cx - 20, yP); x.arc(cx, yP, 20, Math.PI, 0, true); x.lineTo(cx + 20, 60);
+      x.arc(cx + 34, 60, 14, Math.PI, 2 * Math.PI); x.lineTo(hx, hy); });
+    wheel(cx + 34, 60, 14); wheel(cx, yP, 20); line(cx, yP, cx, ly);
+  }
+  x.fillStyle = '#f2b33d'; x.strokeStyle = INK; x.lineWidth = 2; x.fillRect(lx - 22, ly, 44, 40); x.strokeRect(lx - 22, ly, 44, 40);
+  x.fillStyle = INK; x.font = 'bold 12px system-ui'; x.textAlign = 'center'; x.fillText(fmt(m, 1) + ' kg', lx, ly + 25);
+  x.font = '22px system-ui'; x.fillText('✊', hx, hy + 8);
+  const k = Math.min(.7, 60 / Math.max(P, Fs, 1));
+  arrow(x, lx, ly + 40, lx, ly + 40 + P * k, COL.P, 3, 'P');
+  arrow(x, hx, hy + 18, hx, hy + 18 + Fs * k, COL.F, 3, 'F');
+  x.font = 'bold 12px system-ui'; x.fillStyle = INK; x.textAlign = 'right'; x.fillText('h = ' + fmt(d) + ' m', lx - 28, ly + 20);
+  x.textAlign = 'left'; x.fillText('s = ' + fmt(d * (mov ? 2 : 1)) + ' m', hx + 20, hy + 4);
+}
+function stepB(B, dt){
+  const n = B.type === 'fix' ? 1 : 2;
+  if (!B.dyn){ B.d += .5 * dt; }                       // ideal: tekis ko‘tarish (0,5 m/s)
+  else {
+    let a = (n * B.F - B.m * g) / B.m; if (B.d <= 0 && a < 0) a = 0;
+    B.v += a * dt; B.d += B.v * dt; if (B.d < 0){ B.d = 0; B.v = 0; }
+  }
+  if (B.d >= B.h){ B.d = B.h; B.v = 0; B.run = false; }
+}
+function infoB(B, ids, Fs){
+  const n = B.type === 'fix' ? 1 : 2, P = B.m * g, need = P / n, st = $(ids.st), ok = Fs >= need - 1e-9;
+  st.classList.remove('warn');
+  if (!B.dyn) st.textContent = B.type === 'fix' ? 'Ko‘chmas blok kuch yo‘nalishini o‘zgartiradi, lekin ideal sharoitda kuchdan yutuq bermaydi.'
+    : 'Ideal ko‘char blok kuchdan 2 marta yutuq beradi, lekin arqon yo‘li 2 marta uzayadi: s = 2h.';
+  else { st.textContent = ok ? (Fs > need ? 'F > kerakli kuch — yuk ko‘tariladi' : 'F = kerakli kuch — yuk muvozanatda') : 'F < kerakli kuch — yuk ko‘tarilmaydi'; st.classList.toggle('warn', !ok); }
+  panel($(ids.r), [['Blok turi', B.type === 'fix' ? 'Ko‘chmas' : 'Ko‘char'], ['Massa', fmt(B.m, 1), 'kg'], ['Og‘irlik P = mg', fmt(P), 'N'],
+    ['Kerakli kuch ' + (n === 1 ? 'F = mg' : 'F = mg/2'), fmt(need), 'N'], B.dyn ? ['Qo‘yilgan kuch F', fmt(Fs), 'N'] : null,
+    ['Kuchdan yutuq', n + ' marta'], ['Maqsad balandlik', fmt(B.h), 'm'], ['Yuk yo‘li h', fmt(B.d), 'm'], ['Arqon yo‘li s', fmt(B.d * n), 'm']]);
+}
+const B = {type:'fix', m:10, h:1, d:0, v:0, run:false, dyn:false, F:0};
+const ui2 = mk($('#sl2'), [{k:'m', t:'Yuk massasi m =', u:'kg', min:1, max:20, step:1, v:10}, {k:'h', t:'Ko‘tarish balandligi h =', u:'m', min:.5, max:2, step:.1, v:1}]);
+const resetB = b => { b.d = 0; b.v = 0; b.run = false; };
+const startB = b => () => { if (reduce){ b.d = Math.min(b.h, b.d + .25); } else if (b.d >= b.h && !b.dyn) { b.d = 0; b.run = true; } else b.run = true; };
+ctrl($('#k2'), startB(B), () => B.run = false, () => resetB(B));
+$$('#btype button[data-ty]').forEach(b => b.onclick = () => { B.type = b.dataset.ty; resetB(B); $$('#btype button[data-ty]').forEach(z => z.classList.toggle('on', z === b)); });
+$('#cmpbtn').onclick = () => { const o = $('#s2box').parentElement; $('#s2box').classList.toggle('cmp'); $('#cmpbtn').classList.toggle('on'); };
+
+/* ================= TAJRIBA ================= */
+const E = {mode:'h'}, SE = {m:5, F1:30, F2:0, mu:.2, x:0, v:0, t:0, run:false, two:false}, BE = {type:'fix', m:5, h:1, d:0, v:0, run:false, dyn:true, F:60};
+const ui3 = mk($('#sl3'), [
+  {k:'m', t:'1. Jism massasi m =', u:'kg', min:1, max:20, step:.5, v:5},
+  {k:'F', t:'2. Tashqi kuch F =', u:'N', min:0, max:200, step:1, v:30},
+  {k:'mu', t:'3. Ishqalanish koeffitsiyenti μ =', u:'', min:0, max:1, step:.05, v:.2},
+  {k:'h', t:'5. Yukning ko‘tarilish balandligi h =', u:'m', min:.5, max:2, step:.1, v:1}]);
+function setE(m){
+  E.mode = m; resetH(SE); resetB(BE); BE.type = m === 'mov' ? 'mov' : 'fix';
+  ui3.show('mu', m === 'h'); ui3.show('h', m !== 'h');
+  if (m !== 'h') ui3.set('F', Math.min(200, Math.round(ui3.v('m') * g / (m === 'fix' ? 1 : 2) * 1.2)));
+  $('#enote').textContent = m === 'h' ? 'Ishqalanish koeffitsiyenti va tashqi kuchni o‘zgartirib, tezlanish qanday o‘zgarishini kuzating.'
+    : 'Ideal blokda ishqalanish hisobga olinmaydi. Yuk ko‘tarilishi uchun F kerakli kuchdan katta bo‘lishi kerak.';
+  $$('#emode button').forEach(b => b.classList.toggle('on', b.dataset.e === m));
+}
+$$('#emode button').forEach(b => b.onclick = () => setE(b.dataset.e));
+ctrl($('#k3'), () => { if (E.mode === 'h') startH(SE)(); else startB(BE)(); }, () => { SE.run = false; BE.run = false; }, () => { resetH(SE); resetB(BE); });
+setE('h');
+
+/* ================= ASOSIY SIKL ================= */
+let last = performance.now();
+function loop(t){
+  const dt = Math.min(.05, (t - last) / 1000); last = t;
+  // 1-bo‘lim
+  syncH(S1, ui1, S1.mode === 1); if (S1.run) stepH(S1, dt);
+  if (vis($('#c1'))){ drawH($('#c1'), S1); infoH(S1, {st:'#st1', r:'#r1', f:'#f1', f2:'#f1b'}); drawFBD(); }
+  // 2-bo‘lim
+  B.m = ui2.v('m'); B.h = ui2.v('h'); if (B.d > B.h) B.d = B.h; if (B.run) stepB(B, dt);
+  if (vis($('#cb')) || vis($('#cb1'))){
+    drawBlk($('#cb'), B.type, B.d, B.m, B.m * g / (B.type === 'fix' ? 1 : 2));
+    drawBlk($('#cb1'), 'fix', B.d, B.m, B.m * g); drawBlk($('#cb2'), 'mov', B.d, B.m, B.m * g / 2);
+    infoB(B, {st:'#st2', r:'#r2'}, B.m * g / (B.type === 'fix' ? 1 : 2));
+  }
+  // tajriba
+  if (vis($('#ce'))){
+    const m = ui3.v('m'), F = ui3.v('F');
+    if (E.mode === 'h'){ SE.m = m; SE.F1 = F; SE.mu = ui3.v('mu'); if (SE.run) stepH(SE, dt); drawH($('#ce'), SE); infoH(SE, {st:'#st3', r:'#r3'}); }
+    else { BE.m = m; BE.F = F; BE.h = ui3.v('h'); if (BE.d > BE.h) BE.d = BE.h; if (BE.run) stepB(BE, dt); drawBlk($('#ce'), BE.type, BE.d, m, F); infoB(BE, {st:'#st3', r:'#r3'}, F); }
+  }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+addEventListener('resize', () => { $$('canvas').forEach(c => c._w = 0); });
+
+/* ================= NAVIGATSIYA ================= */
+$$('#nav button').forEach(b => b.onclick = () => {
+  $$('#nav button').forEach(z => z.classList.toggle('on', z === b));
+  $$('.sec').forEach(s => s.classList.toggle('on', s.id === b.dataset.t)); scrollTo(0, 0);
+});
+
+/* ================= TEST ================= */
+const QZ = [
+  ['Jismga ta’sir qilayotgan barcha kuchlarning vektor yig‘indisi nima deb ataladi?', ['Og‘irlik kuchi', 'Natijaviy kuch', 'Ishqalanish kuchi', 'Tayanch reaksiyasi'], 1],
+  ['Jismga 20 N va qarama-qarshi yo‘nalishda 5 N kuch ta’sir qilmoqda. Natijaviy kuch qancha?', ['15 N', '25 N', '4 N', '100 N'], 0],
+  ['Jismning tezlanishi qaysi formula bilan aniqlanadi?', ['a = m/F', 'a = F/m', 'a = Fm', 'a = mg'], 1],
+  ['Gorizontal sirtda tinch turgan jismga vertikal yo‘nalishda qanday kuchlar ta’sir qiladi?', ['Faqat ishqalanish kuchi', 'Og‘irlik kuchi va tayanch reaksiyasi', 'Faqat tashqi kuch', 'Faqat natijaviy kuch'], 1],
+  ['Agar qarama-qarshi yo‘nalgan ikkita kuch teng bo‘lsa, natijaviy kuch qanday bo‘ladi?', ['Maksimal', 'Nol', 'Massaga teng', 'Tezlikka teng'], 1],
+  ['Ko‘chmas blokning asosiy vazifasi nima?', ['Kuchni 2 marta oshirish', 'Massani kamaytirish', 'Kuch yo‘nalishini o‘zgartirish', 'Ishqalanishni yo‘qotish'], 2],
+  ['Ideal ko‘chmas blokda yukni ko‘tarish uchun kerakli kuch qanday?', ['F = 2mg', 'F = mg', 'F = mg/2', 'F = m/g'], 1],
+  ['Ideal ko‘char blokda kuchdan qancha yutuq olinadi?', ['2 marta', '3 marta', '4 marta', 'Yutuq olinmaydi'], 0],
+  ['Ideal ko‘char blok yordamida 1 m balandlikka yuk ko‘tarilsa, arqonning erkin uchi taxminan qancha masofa harakat qiladi?', ['0,5 m', '1 m', '2 m', '4 m'], 2],
+  ['Natijaviy kuch ortsa, massa o‘zgarmagan holda jismning tezlanishi qanday o‘zgaradi?', ['Ortadi', 'Kamayadi', 'O‘zgarmaydi', 'Nol bo‘ladi'], 0]];
+const Q = {i:0, ok:0, no:0, sel:-1, done:false};
+function renderQ(){
+  const box = $('#quiz');
+  if (Q.i >= QZ.length){
+    const p = Math.round(Q.ok / QZ.length * 100), grade = p >= 90 ? 5 : p >= 70 ? 4 : p >= 50 ? 3 : 2;
+    box.innerHTML = `<h3>Test yakuni</h3><div class="res"><span>To‘g‘ri javoblar</span><span>${Q.ok}</span><span>Noto‘g‘ri javoblar</span><span>${Q.no}</span><span>Foiz</span><span>${p}%</span><span>Baho</span><span>${grade}</span></div><div class="row"><button class="b pri" id="qr">Testni qayta boshlash</button></div>`;
+    $('#qr').onclick = () => { Object.assign(Q, {i:0, ok:0, no:0, sel:-1, done:false}); renderQ(); }; return;
+  }
+  const q = QZ[Q.i];
+  box.innerHTML = `<p><b>${Q.i + 1}/${QZ.length}.</b> ${q[0]}</p>` + q[1].map((o, j) => `<div class="opt" data-j="${j}" role="button" tabindex="0"><b>${'ABCD'[j]})</b> ${o}</div>`).join('') +
+    `<div class="row"><button class="b pri" id="qc">Tekshirish</button><button class="b" id="qn" hidden>${Q.i === QZ.length - 1 ? 'Natijani ko‘rish' : 'Keyingi savol'}</button></div><div class="status" id="qm" hidden></div>`;
+  const pick = o => { if (Q.done) return; Q.sel = +o.dataset.j; $$('.opt').forEach(z => z.style.outline = z === o ? '3px solid #1f5fbf' : ''); };
+  $$('.opt').forEach(o => { o.onclick = () => pick(o); o.onkeydown = e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); pick(o); } }; });
+  $('#qc').onclick = () => {
+    const m = $('#qm'); m.hidden = false;
+    if (Q.sel < 0){ m.textContent = 'Avval javobni tanlang.'; m.classList.add('warn'); return; }
+    if (Q.done) return; Q.done = true;
+    const good = Q.sel === q[2]; good ? Q.ok++ : Q.no++;
+    $$('.opt').forEach((z, j) => { z.style.outline = ''; if (j === q[2]) z.classList.add('ok'); else if (j === Q.sel) z.classList.add('no'); });
+    m.textContent = good ? 'TO‘G‘RI JAVOB!' : 'NOTO‘G‘RI JAVOB! To‘g‘ri javob: ' + 'ABCD'[q[2]] + ') ' + q[1][q[2]];
+    m.classList.toggle('warn', !good); $('#qc').disabled = true; $('#qn').hidden = false;
+  };
+  $('#qn').onclick = () => { Q.i++; Q.sel = -1; Q.done = false; renderQ(); };
+}
+renderQ();
+</script>
+</body>
+</html>
