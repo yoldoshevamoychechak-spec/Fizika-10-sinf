@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="uz"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Markazga intilma kuch — nazariya, simulyatsiya, test</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#eef3f6;--card:#fff;--ink:#12212b;--mut:#5b6b76;--line:#c3d0d8;--acc:#e8790c;--f1:#1f6fd1;--f2:#d43a3a;--mg:#2e9a4f;--n:#7a4bd1;--fr:#8a5a2b;--tq:#0e9ad0;--ok:#1b8a4a;--bad:#c62f2f}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1a21;--card:#16262f;--ink:#e6eef2;--mut:#93a5b0;--line:#33505f;--acc:#ff9a3c;--f1:#5aa2ff;--f2:#ff6b6b;--mg:#55d17a;--n:#a98bff;--fr:#d1a06a;--tq:#5ac8fa;--ok:#4fd88a;--bad:#ff6b6b}}
+:root[data-theme="dark"]{--bg:#0e1a21;--card:#16262f;--ink:#e6eef2;--mut:#93a5b0;--line:#33505f;--acc:#ff9a3c;--f1:#5aa2ff;--f2:#ff6b6b;--mg:#55d17a;--n:#a98bff;--fr:#d1a06a;--tq:#5ac8fa;--ok:#4fd88a;--bad:#ff6b6b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Trebuchet MS","Segoe UI",system-ui,sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px 6px;max-width:980px;margin:auto}
+h1{font-size:1.35rem;margin:0}h2{font-size:1.2rem;margin:22px 0 8px}h3{font-size:1.02rem;margin:12px 0 4px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 12px}
+button:hover{border-color:var(--acc)}button:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+button.on{background:var(--acc);border-color:var(--acc);color:#111;font-weight:700}
+main{max-width:980px;margin:auto;padding:0 18px 28px}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+canvas{width:100%;height:auto;display:block;background:var(--card);border:1px solid var(--line);border-radius:10px;margin-top:8px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}}
+label{display:grid;grid-template-columns:110px 1fr 84px;gap:8px;align-items:center;margin:4px 0}
+label output{text-align:right;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--acc)}
+#p div{padding:2px 0;border-bottom:1px dashed var(--line)}
+.ok{color:var(--ok);font-weight:700}.bad{color:var(--bad);font-weight:700}
+.th{color:var(--mut);margin:6px 0}
+#nz p{margin:4px 0;max-width:78ch}
+.fm{background:var(--bg);border-left:4px solid var(--acc);padding:6px 10px;margin:6px 0;font-weight:700;overflow-x:auto}
+.warn{border-left:4px solid var(--bad);padding:6px 10px;margin:8px 0;background:var(--bg)}
+.q{margin:12px 0}.q p{margin:0 0 6px;font-weight:700}
+.q button{display:block;width:100%;text-align:left;margin:4px 0}
+.q button.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 20%,var(--card))}
+.q button.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 20%,var(--card))}
+.q .ex{color:var(--mut);margin-top:4px}
+#score{position:sticky;bottom:8px;text-align:center;font-weight:700}
+</style></head><body>
+<header><h1>Markazga intilma kuch</h1><button id="thm">Qorong'i / yorug'</button></header>
+<main>
+<div class="row" id="tabs"></div>
+<section class="box" id="nz"></section>
+<h2>Simulyatsiya</h2>
+<div class="row" id="scenes"></div>
+<p class="th" id="theory"></p>
+<canvas id="c" width="800" height="420" aria-label="Simulyatsiya maydoni"></canvas>
+<div class="grid"><div class="box"><div id="sl"></div><div class="row" id="bt"></div></div><div class="box"><div id="p"></div></div></div>
+<h2>Mavzu bo'yicha test (10 ta savol)</h2>
+<section class="box" id="test"></section>
+<div id="score" class="box"></div>
+</main>
+<script>
+const $=q=>document.querySelector(q),cv=$('#c'),X=cv.getContext('2d'),G=9.8,PI=Math.PI;
+const f=(n,d=2)=>n.toFixed(d).replace('.',','),col=n=>getComputedStyle(document.documentElement).getPropertyValue('--'+n).trim(),V=id=>+$('#s_'+id).value;
+let tab=1,sc='ayl',st={},run=true,last=0;
+function arrow(x,y,dx,dy,c,t,w=4,dash){const L=Math.hypot(dx,dy);if(L<3)return;const a=Math.atan2(dy,dx),ex=x+dx,ey=y+dy;
+ X.save();X.strokeStyle=X.fillStyle=c;X.lineWidth=w;X.setLineDash(dash?[6,5]:[]);X.beginPath();X.moveTo(x,y);X.lineTo(ex-8*Math.cos(a),ey-8*Math.sin(a));X.stroke();X.setLineDash([]);
+ X.beginPath();X.moveTo(ex,ey);X.lineTo(ex-15*Math.cos(a-.4),ey-15*Math.sin(a-.4));X.lineTo(ex-15*Math.cos(a+.4),ey-15*Math.sin(a+.4));X.fill();
+ if(t){X.font='600 14px "Trebuchet MS",sans-serif';const wd=X.measureText(t).width;X.fillText(t,Math.min(Math.max(ex+(dx>=0?8:-wd-8),4),796-wd),Math.min(Math.max(ey+(dy>0?18:-8),16),414))}X.restore()}
+const circ=(x,y,r,c,fill)=>{X.beginPath();X.arc(x,y,r,0,2*PI);if(fill){X.fillStyle=c;X.fill()}else{X.strokeStyle=c;X.lineWidth=2;X.stroke()}};
+const ln=(a,b,c,d,cl,w=2)=>{X.strokeStyle=cl;X.lineWidth=w;X.beginPath();X.moveTo(a,b);X.lineTo(c,d);X.stroke()};
+const txt=(s,x,y)=>{X.fillStyle=col('ink');X.font='14px "Trebuchet MS",sans-serif';X.fillText(s,x,y)};
+const len=(F,k,mx=160)=>Math.min(Math.max(F*k,16),mx);
+
+const TH={
+1:`<h2 style="margin-top:0">1. Aylana bo'ylab harakatda kuchlar</h2>
+<p>Tekis aylana harakatda tezlik moduli o'zgarmaydi, lekin yo'nalishi doim o'zgaradi (urinma bo'ylab), shuning uchun jism <b>tezlanish</b> bilan harakatlanadi.</p>
+<div class="fm">T (davr, s),&nbsp; ν = 1/T (Hz),&nbsp; ω = 2π/T = 2πν (rad/s),&nbsp; v = ωR = 2πR/T</div>
+<p>Markazga intilma tezlanish radius bo'ylab markazga yo'nalgan:</p>
+<div class="fm">a_m = v²/R = ω²R = 4π²R/T²</div>
+<p>Nyutonning 2-qonuniga ko'ra markazga intilma kuch:</p>
+<div class="fm">F_m = m·a_m = mv²/R = mω²R</div>
+<p>Bu alohida turdagi yangi kuch emas: u jismga ta'sir qiluvchi kuchlar teng ta'sir etuvchisining markazga yo'nalgan tashkil etuvchisi. Uning rolini taranglik, ishqalanish, butun olam tortishish yoki tayanch reaksiya kuchi o'ynaydi. Bu kuch yo'qolsa, jism inersiya bo'yicha <b>urinma</b> bo'ylab tekis to'g'ri chiziqli harakat qiladi.</p>
+<p>Vertikal tekislikda: qavariq ko'prikda N = m(g − v²/R), botiq ko'prikda N = m(g + v²/R); N = 0 (vaznsizlik) bo'lganda v = √(gR).</p>`,
+2:`<h2 style="margin-top:0">2. Ipga mahkamlangan shar harakati. Markazdan qochma kuch</h2>
+<p><b>Stoldagi shar</b> (silliq gorizontal sirt): markazga intilma kuchni ipning tarangligi beradi.</p>
+<div class="fm">T = F_m = mω²R = mv²/R,&nbsp; ip uzilishi sharti: T &gt; T_max</div>
+<p><b>Konussimon mayatnik</b> (ip uzunligi L, vertikal bilan burchagi α, aylana radiusi r = L·sin α): vertikal T·cos α = mg, gorizontal T·sin α = mω²r.</p>
+<div class="fm">T = mg/cos α,&nbsp; tg α = ω²r/g,&nbsp; cos α = g/(ω²L) (ω²L &gt; g),&nbsp; T_davr = 2π√(L·cos α/g)</div>
+<p><b>Vertikal aylana:</b> yuqori nuqtada T + mg = mv²/R, pastki nuqtada T − mg = mv²/R. Yuqorida eng kichik tezlik (T = 0): v_min = √(gR). Energiya saqlansa, T_past − T_yuqori = 6mg.</p>
+<p><b>Markazdan qochma kuch</b> — aylanuvchi (noinersial) sanoq sistemasida kiritiladigan inersiya kuchi, markazdan tashqariga yo'nalgan:</p>
+<div class="fm">F_q = mω²R = mv²/R,&nbsp; aylanuvchi sistemada F_m − F_q = 0 (shar "tinch")</div>
+<div class="warn"><b>Diqqat:</b> inersial sanoq sistemasida (Yerga nisbatan) markazdan qochma kuch mavjud emas: shar markazga tezlanish bilan harakatlanadi. U sharga ta'sir qiluvchi haqiqiy kuch emas va markazga intilma kuchning "aks ta'siri" ham emas: 3-qonundagi aks ta'sir kuchi (shar ipni tashqariga tortadi) ipga qo'yilgan.</div>`,
+3:`<h2 style="margin-top:0">3. Turmush va texnikada markazga intilma va markazdan qochma kuchlar</h2>
+<p><b>Markazga intilma kuch:</b> yo'ldagi burilish (avtomobil, velosiped, poyezd), qiya yo'l va temir yo'lda tashqi relsning balandroq qo'yilishi, "o'lim aylanasi" (yuqorida v ≥ √(gR)), karusel, bolg'a otish, Oy va sun'iy yo'ldoshlarning harakati.</p>
+<div class="fm">Burilishda: F_ishq = μmg = mv²/R → v_max = √(μgR).&nbsp; Qiya yo'lda ishqalanishsiz: tg α = v²/(gR)</div>
+<div class="fm">Yo'ldosh: mg = mv²/R → v₁ = √(gR_Yer) ≈ 7,9 km/s (I kosmik tezlik),&nbsp; umumiy: v = √(GM/r),&nbsp; T = 2πr/v</div>
+<p><b>Markazdan qochma effekt:</b> sentrifuga (kir yuvish mashinasining otjimi, laboratoriya sentrifugasi, sut separatori), sentrifugal nasos, Vatt regulyatori, kosmonavtlar trenajyori (g-yuk n = a/g = ω²R/g), Yerning sutkalik aylanishi (ekvatorda og'irlik biroz kamayadi).</p>
+<div class="fm">Sentrifuga: ω = 2πn/60,&nbsp; a = ω²R.&nbsp; Misol: R = 0,2 m, 1200 ayl/min → ω ≈ 125,7 rad/s, a ≈ 3158 m/s² ≈ 322 g</div>
+<p><b>Xavfsizlik:</b> F_m = mv²/R tezlikning kvadratiga proporsional: tezlik 2 marta oshsa, kerakli kuch 4 marta oshadi. Shuning uchun burilishdan oldin tezlikni kamaytirish kerak.</p>`};
+
+const SC={
+ayl:{tab:1,name:'Tekis aylana harakat',rs:1,th:"F_m = mv²/R = mω²R, radius bo'ylab markazga yo'nalgan. «Kuchni uzish» — jism urinma bo'ylab uchadi.",
+ sl:[['R','Radius R',.2,5,2,.1,'m'],['T','Davr T',1,10,4,.1,'s'],['m','Massa m',.1,5,1,.1,'kg']],
+ btn:[['Kuchni uzish',()=>{if(st.cut)return;const R=V('R')*40,v=2*PI*V('R')/V('T')*40;st.cut=1;st.x=400+R*Math.cos(st.a);st.y=210+R*Math.sin(st.a);st.vx=-v*Math.sin(st.a);st.vy=v*Math.cos(st.a)}]],
+ init(){st={a:0,cut:0}},
+ step(dt){if(!st.cut)st.a+=2*PI/V('T')*dt;else{st.x+=st.vx*dt;st.y+=st.vy*dt}},
+ draw(){const R=V('R'),T=V('T'),m=V('m'),w=2*PI/T,v=w*R,am=v*v/R,F=m*am,Rp=R*40;
+  circ(400,210,Rp,col('line'));circ(400,210,3,col('ink'),1);let x,y;
+  if(st.cut){x=st.x;y=st.y;arrow(x,y,st.vx*.1,st.vy*.1,col('f1'),'v⃗ (urinma)')}
+  else{x=400+Rp*Math.cos(st.a);y=210+Rp*Math.sin(st.a);
+   arrow(x,y,-Math.sin(st.a)*len(v,8,110),Math.cos(st.a)*len(v,8,110),col('f1'),'v⃗ = '+f(v)+' m/s');
+   arrow(x,y,-Math.cos(st.a)*len(F,2,Math.max(Rp-8,20)),-Math.sin(st.a)*len(F,2,Math.max(Rp-8,20)),col('f2'),'F_m = '+f(F)+' N',5)}
+  circ(x,y,9,col('acc'),1);
+  return [`ν = 1/T = ${f(1/T)} Hz,  ω = 2π/T = ${f(w)} rad/s`,`v = ωR = ${f(v)} m/s`,`a_m = v²/R = ${f(am)} m/s²`,`F_m = m·a_m = ${f(F)} N`,st.cut?"Kuch uzildi: jism urinma bo'ylab tekis harakat qilyapti":'']}},
+avto:{tab:1,name:'Burilishdagi avtomobil',rs:1,th:"Markazga intilma kuchni ishqalanish beradi: F_ishq = μmg ≥ mv²/R bo'lsa avtomobil burila oladi (animatsiya 4× tezlashtirilgan).",
+ sl:[['v','Tezlik v',1,30,12,.5,'m/s'],['R','Radius R',20,100,50,1,'m'],['mu','μ',0,1,.4,.01,''],['m','Massa m',500,2000,1000,50,'kg']],
+ init(){st={a:0,out:0}},
+ step(dt){const v=V('v'),R=V('R'),vm=Math.sqrt(V('mu')*G*R);
+  if(!st.out&&v>vm){st.out=1;const r=R*2;st.x=400+r*Math.cos(st.a);st.y=215+r*Math.sin(st.a);st.vx=-v*2*4*Math.sin(st.a)*.25;st.vy=v*2*4*Math.cos(st.a)*.25}
+  if(st.out){st.x+=st.vx*dt;st.y+=st.vy*dt}else st.a+=v/R*4*dt},
+ draw(){const v=V('v'),R=V('R'),mu=V('mu'),m=V('m'),vm=Math.sqrt(mu*G*R),Fn=m*v*v/R,Ff=mu*m*G,Rp=R*2;
+  circ(400,215,Rp+14,col('line'));circ(400,215,Rp-14,col('line'));
+  let x,y,ang=st.a;if(st.out){x=st.x;y=st.y}else{x=400+Rp*Math.cos(st.a);y=215+Rp*Math.sin(st.a)}
+  X.save();X.translate(x,y);X.rotate(st.out?Math.atan2(st.vy,st.vx):ang+PI/2);X.fillStyle=st.out?col('bad'):col('f1');X.fillRect(-7,-13,14,26);X.restore();
+  if(!st.out){const k=110/Math.max(Fn,Ff,1),c=[-Math.cos(ang),-Math.sin(ang)];
+   arrow(x,y,c[0]*Fn*k,c[1]*Fn*k,col('f2'),'kerak: '+f(Fn/1000)+' kN',4,1);arrow(x,y+0,c[0]*Ff*k*.999,c[1]*Ff*k*.999+8,col('fr'),'F_ishq: '+f(Ff/1000)+' kN',3)}
+  const ok=v<=vm;
+  return [`Kerakli F_m = mv²/R = ${f(Fn)} N`,`Mavjud F_ishq = μmg = ${f(Ff)} N`,`v_max = √(μgR) = ${f(vm)} m/s`,ok?'Burilish: <span class="ok">XAVFSIZ</span>':'Burilish: <span class="bad">SIRPANISH</span> (avtomobil urinma bo\'ylab chiqib ketdi)',`Tezlik 2 marta oshsa, kerakli kuch 4 marta oshadi`]}},
+stol:{tab:2,name:'Stoldagi shar (ip)',rs:1,th:"Silliq stolda T = mω²R. T > T_max bo'lsa ip uziladi. Tugma bilan sanoq sistemasini almashtiring: aylanuvchi sistemada F_q = F_m.",
+ sl:[['m','Massa m',.1,2,.5,.05,'kg'],['R','Radius R',.2,1.5,1,.05,'m'],['w','ω',1,20,6,.5,'rad/s'],['Tm','T_max',5,300,100,5,'N']],
+ btn:[['Inersial ↔ aylanuvchi sistema',()=>{st.rot=!st.rot}]],
+ init(){st={a:0,cut:0,rot:st.rot||0}},
+ step(dt){const T=V('m')*V('w')**2*V('R');
+  if(!st.cut){st.a+=V('w')*dt;if(T>V('Tm')){st.cut=1;const r=V('R')*130,v=V('w')*r;st.x=400+r*Math.cos(st.a);st.y=210+r*Math.sin(st.a);st.vx=-v*Math.sin(st.a);st.vy=v*Math.cos(st.a)}}
+  else{st.x+=st.vx*dt;st.y+=st.vy*dt}},
+ draw(){const m=V('m'),R=V('R'),w=V('w'),T=m*w*w*R,v=w*R,Rp=R*130,a=st.rot&&!st.cut?0:st.a;
+  circ(400,210,Rp+6,col('line'));circ(400,210,4,col('ink'),1);let x,y;
+  if(st.cut){x=st.x;y=st.y;arrow(x,y,st.vx*.15,st.vy*.15,col('f1'),'v⃗ (ip uzildi)')}
+  else{x=400+Rp*Math.cos(a);y=210+Rp*Math.sin(a);ln(400,210,x,y,col('fr'),3);
+   if(!st.rot)arrow(x,y,-Math.sin(a)*len(v,10,100),Math.cos(a)*len(v,10,100),col('f1'),'v⃗');
+   arrow(x,y,-Math.cos(a)*len(T,.8,Math.max(Rp-10,20)),-Math.sin(a)*len(T,.8,Math.max(Rp-10,20)),col('tq'),'T = F_m = '+f(T)+' N',5);
+   if(st.rot)arrow(x,y,Math.cos(a)*len(T,.8,90),Math.sin(a)*len(T,.8,90),col('acc'),'F_q = '+f(T)+' N',5,1)}
+  circ(x,y,10,col('acc'),1);txt(st.rot?'Aylanuvchi sanoq sistema: shar tinch, F_m − F_q = 0':'Inersial sanoq sistema: shar markazga tezlanish bilan harakatlanadi',20,30);
+  return [`T = mω²R = ${f(m)}·${f(w*w)}·${f(R)} = ${f(T)} N`,`v = ωR = ${f(v)} m/s`,`T_max = ${f(V('Tm'))} N`,st.cut?'Ip <span class="bad">UZILDI</span>: shar urinma bo\'ylab uchmoqda':'Ip <span class="ok">butun</span>',st.rot?`F_q = mω²R = ${f(T)} N (inersiya kuchi)`:'Markazdan qochma kuch bu sistemada yo\'q']}},
+kon:{tab:2,name:'Konussimon mayatnik',th:"T·cos α = mg, T·sin α = mω²r. ω²L ≤ g bo'lsa shar aylanmasdan osilib turadi.",
+ sl:[['L','Ip uzunligi L',.5,2,1,.05,'m'],['m','Massa m',.1,2,.5,.05,'kg'],['w','ω',1,15,7,.1,'rad/s']],
+ init(){st={a:0}},step(dt){st.a+=V('w')*dt},
+ draw(){const L=V('L'),m=V('m'),w=V('w'),hang=w*w*L<=G,ca=hang?1:G/(w*w*L),al=Math.acos(ca),r=L*Math.sin(al),T=m*G/ca,S=100;
+  X.fillStyle=col('line');X.fillRect(300,30,200,10);
+  const by=40+L*S*ca,bx=400+r*S*Math.cos(st.a),bz=by+r*S*.25*Math.sin(st.a);
+  X.save();X.setLineDash([5,5]);X.strokeStyle=col('mut');X.beginPath();X.ellipse(400,by,Math.max(r*S,1),r*S*.25,0,0,2*PI);X.stroke();X.restore();
+  ln(400,40,bx,bz,col('fr'),3);circ(bx,bz,11,col('acc'),1);
+  const dx=400-bx,dy=40-bz,d=Math.hypot(dx,dy)||1,Lt=len(T,2,170);
+  arrow(bx,bz,0,len(m*G,2,120),col('mg'),'mg = '+f(m*G)+' N');arrow(bx,bz,dx/d*Lt,dy/d*Lt,col('tq'),'T = '+f(T)+' N');
+  return [hang?`ω²L = ${f(w*w*L)} ≤ g = ${f(G)} → aylana yo'q, shar osilib turibdi`:`cos α = g/(ω²L) = ${f(ca,3)} → α = ${f(al*180/PI,1)}°`,`r = L·sin α = ${f(r)} m`,`T = mg/cos α = ${f(T)} N`,`F_m = mg·tg α = ${f(m*G*Math.tan(al))} N`,`T_davr = 2π√(L·cos α/g) = ${f(2*PI*Math.sqrt(L*ca/G))} s`]}},
+yol:{tab:3,name:"Sun'iy yo'ldosh",th:"Yo'ldoshga ta'sir qiluvchi butun olam tortishish kuchi markazga intilma kuch rolini o'ynaydi: mv²/r = GMm/r² (animatsiya 1500× tezlashtirilgan, orbita masshtabi shartli).",
+ sl:[['h','Balandlik h',0,36000,400,100,'km']],
+ init(){st={a:0}},
+ step(dt){const r=6.371e6+V('h')*1000,v=Math.sqrt(3.986e14/r);st.a+=2*PI/(2*PI*r/v)*1500*dt},
+ draw(){const R=6.371e6,h=V('h'),r=R+h*1000,v=Math.sqrt(3.986e14/r),T=2*PI*r/v,rp=90+110*h/36000;
+  circ(400,210,70,col('f1'),1);txt('Yer',384,214);circ(400,210,rp,col('line'));
+  const x=400+rp*Math.cos(st.a),y=210+rp*Math.sin(st.a);circ(x,y,7,col('acc'),1);
+  arrow(x,y,-Math.sin(st.a)*70,Math.cos(st.a)*70,col('f1'),'v⃗');arrow(x,y,-Math.cos(st.a)*60,-Math.sin(st.a)*60,col('f2'),'F_m = F_tortishish',5);
+  return [`r = R_Yer + h = ${f(r/1000,0)} km`,`v = √(GM/r) = ${f(v/1000)} km/s`,`T = 2πr/v = ${f(T/60,1)} min (${f(T/3600)} soat)`,`a_m = GM/r² = ${f(3.986e14/(r*r))} m/s²`,h===0?`Yer sirtiga yaqin orbita: v ≈ 7,9 km/s (I kosmik tezlik)`:'']}},
+sent:{tab:3,name:'Sentrifuga',rs:1,th:"a = ω²R. Tezlanish g dan katta bo'lganda zarrachalar devorga siqiladi («otjim»).",
+ sl:[['n','Aylanish n',0,2000,600,10,'ayl/min'],['R','Radius R',.05,.5,.2,.01,'m']],
+ init(){st={a:0,p:Array.from({length:14},(_,i)=>({r:.15+.7*((i*37)%14)/14,t:i*.45}))}},
+ step(dt){const w=2*PI*V('n')/60,a=w*w*V('R');st.a+=Math.min(w,15)*dt*.5;if(a>G)st.p.forEach(q=>{q.r=Math.min(.96,q.r+.03*Math.min(a/G,8)*dt)})},
+ draw(){const R=V('R'),n=V('n'),w=2*PI*n/60,a=w*w*R,Rp=R*480;
+  circ(400,210,Rp,col('mut'));circ(400,210,Rp-4,col('line'));
+  st.p.forEach(q=>circ(400+q.r*Rp*Math.cos(q.t+st.a),210+q.r*Rp*Math.sin(q.t+st.a),5,col(q.r>.9?'f2':'acc'),1));
+  txt('Tepadan ko\'rinish',20,30);
+  return [`ω = 2πn/60 = ${f(w)} rad/s`,`a = ω²R = ${f(a)} m/s²`,`g-yuk n = a/g = ${f(a/G,1)} g`,a>G?'Zarrachalar devorga siqilmoqda (otjim)':'a &lt; g: zarrachalar erkin aylanmoqda']}}
+};
+const TABS={1:"1. Aylana bo'ylab harakat",2:"2. Ipga mahkamlangan shar",3:"3. Turmush va texnika"};
+function resetSc(){SC[sc].init()}
+function build(){
+ $('#tabs').innerHTML=Object.keys(TABS).map(t=>`<button data-t="${t}" class="${t==tab?'on':''}">${TABS[t]}</button>`).join('');
+ $('#nz').innerHTML=TH[tab];
+ $('#scenes').innerHTML=Object.keys(SC).filter(k=>SC[k].tab==tab).map(k=>`<button data-s="${k}" class="${k==sc?'on':''}">${SC[k].name}</button>`).join('');
+ const S=SC[sc];$('#theory').textContent=S.th;
+ $('#sl').innerHTML=S.sl.map(([id,l,mn,mx,v,s,u])=>`<label>${l}<input type="range" id="s_${id}" min="${mn}" max="${mx}" step="${s}" value="${v}"><output id="o_${id}"></output></label>`).join('');
+ S.sl.forEach(([id,,,,,s,u])=>{const el=$('#s_'+id),o=$('#o_'+id),d=s<.1?2:s<1?1:0,upd=()=>o.textContent=f(+el.value,d)+' '+u;upd();el.addEventListener('input',()=>{upd();if(S.rs)resetSc()})});
+ $('#bt').innerHTML=`<button id="run">To'xtatish</button><button id="rst">Qayta boshlash</button>`+(S.btn||[]).map((b,i)=>`<button data-b="${i}">${b[0]}</button>`).join('');
+ run=true;st={};resetSc()}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.t){tab=+b.dataset.t;sc=Object.keys(SC).find(k=>SC[k].tab==tab);build()}
+ else if(b.dataset.s){sc=b.dataset.s;build()}
+ else if(b.dataset.b!==undefined)SC[sc].btn[+b.dataset.b][1]();
+ else if(b.id==='run'){run=!run;b.textContent=run?"To'xtatish":'Boshlash'}
+ else if(b.id==='rst'){resetSc()}
+ else if(b.id==='thm'){const r=document.documentElement,d=getComputedStyle(r).getPropertyValue('--bg').trim()==='#0e1a21';r.dataset.theme=d?'light':'dark'}});
+function frame(t){const dt=Math.min((t-last)/1000||0,.05);last=t;const S=SC[sc];if(run)S.step(dt);
+ X.clearRect(0,0,800,420);X.fillStyle=col('card');X.fillRect(0,0,800,420);
+ $('#p').innerHTML=S.draw().filter(Boolean).map(l=>`<div>${l}</div>`).join('');requestAnimationFrame(frame)}
+build();requestAnimationFrame(frame);
+</script>
+<script>
+// Test: [savol, variantlar, to'g'ri indeks, izoh]
+const Q=[
+["Tekis aylana harakatda tezlanish qanday yo'nalgan?",["Tezlik bo'ylab urinma yo'nalishda","Aylana markaziga","Markazdan tashqariga","Tezlikka qarama-qarshi"],1,"a_m = v²/R, radius bo'ylab markazga yo'nalgan."],
+["Massasi 2 kg jism R = 1,5 m radiusli aylana bo'ylab v = 3 m/s tezlik bilan harakatlanmoqda. Markazga intilma kuch qancha?",["4 N","6 N","27 N","12 N"],3,"F = mv²/R = 2·9/1,5 = 12 N."],
+["Aylanish davri T = 2 s bo'lsa, burchak tezlik qancha?",["0,5 rad/s","6,28 rad/s","3,14 rad/s","12,56 rad/s"],2,"ω = 2π/T = π ≈ 3,14 rad/s."],
+["Aylana bo'ylab tekis harakatlanayotgan sharni ushlab turgan ip uzilsa, shar qanday harakatlanadi?",["Urinma bo'ylab to'g'ri chiziqli tekis","Radius bo'ylab markazdan tashqariga","Markaz tomon","Aylana bo'ylab davom etadi"],0,"Inersiya qonuni: shar uzilish paytidagi tezlik yo'nalishida uchadi."],
+["Silliq stolda m = 0,2 kg shar R = 0,5 m radiusli aylanada ω = 10 rad/s bilan aylanmoqda. Ipning tarangligi qancha?",["1 N","20 N","10 N","100 N"],2,"T = mω²R = 0,2·100·0,5 = 10 N."],
+["Markazdan qochma kuch haqida qaysi fikr to'g'ri?",["Inersial sanoq sistemasida sharga ta'sir qiluvchi haqiqiy kuch","Aylanuvchi sanoq sistemasida kiritiladigan, markazdan tashqariga yo'nalgan inersiya kuchi","Markazga intilma kuchning aks ta'siri kuchi","Faqat suyuqliklarga ta'sir qiladi"],1,"F_q = mω²R faqat noinersial sistemada kiritiladi."],
+["Yo'l burilishining radiusi R = 40 m, μ = 0,4. Avtomobil sirpanmasdan eng ko'pi bilan qanday tezlikda burila oladi? (g = 10 m/s²)",["12,6 m/s","4 m/s","16 m/s","160 m/s"],0,"v_max = √(μgR) = √160 ≈ 12,6 m/s."],
+["Chelakdagi suv vertikal aylanada aylantirilmoqda (R = 0,9 m). Yuqori nuqtada suv to'kilmasligi uchun eng kichik tezlik qancha? (g = 10 m/s²)",["9 m/s","4,5 m/s","1,5 m/s","3 m/s"],3,"v_min = √(gR) = √9 = 3 m/s."],
+["Avtomobil qavariq ko'prikning o'rtasidan o'tayotganda uning ko'prikka bosim kuchi qanday?",["Og'irlik kuchiga teng","Og'irlik kuchidan katta","Og'irlik kuchidan kichik","Har doim nolga teng"],2,"N = m(g − v²/R) < mg."],
+["Yer sirtiga yaqin doiraviy orbitadagi sun'iy yo'ldoshning tezligi (birinchi kosmik tezlik) taxminan qancha? (g = 9,8 m/s², R_Yer = 6400 km)",["11,2 km/s","7,9 km/s","3,1 km/s","16,7 km/s"],1,"v = √(gR) = √(9,8·6,4·10⁶) ≈ 7,9 km/s."]];
+let sc2=0,ans=0;const T=document.getElementById('test'),S2=document.getElementById('score');
+function scoreTxt(){S2.textContent=ans<Q.length?`Javob berilgan: ${ans} / ${Q.length}. To'g'ri: ${sc2}`:`Natija: ${sc2} / ${Q.length} (${sc2*10}%) — ${sc2>=9?"a'lo":sc2>=7?"yaxshi":sc2>=5?"qoniqarli":"mavzuni qayta ko'rib chiqing"}`}
+function renderT(){sc2=0;ans=0;T.innerHTML=Q.map((q,i)=>`<div class="q"><p>${i+1}. ${q[0]}</p>`+q[1].map((o,j)=>`<button data-q="${i}" data-o="${j}">${'ABCD'[j]}) ${o}</button>`).join('')+`<div class="ex"></div></div>`).join('')+`<button id="tr">Testni qayta topshirish</button>`;scoreTxt()}
+T.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.id==='tr'){renderT();return}
+ const i=+b.dataset.q,o=+b.dataset.o,box=b.parentNode;if(box.dataset.done)return;box.dataset.done=1;
+ box.querySelectorAll('button').forEach(x=>{const j=+x.dataset.o;if(j===Q[i][2])x.classList.add('right');else if(j===o)x.classList.add('wrong');x.disabled=true});
+ if(o===Q[i][2])sc2++;ans++;box.querySelector('.ex').textContent=(o===Q[i][2]?"To'g'ri. ":"Noto'g'ri. ")+Q[i][3];scoreTxt()});
+renderT();
+</script></body></html>
