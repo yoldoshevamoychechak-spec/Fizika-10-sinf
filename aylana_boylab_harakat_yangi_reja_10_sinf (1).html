@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10-sinf Fizika — Aylana bo‘ylab harakat</title>
+<style>
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+ margin:0;font-family:Arial,Helvetica,sans-serif;
+ background:linear-gradient(135deg,#eef7ff,#f7f1ff);
+ color:#18243a;line-height:1.6
+}
+header{
+ position:sticky;top:0;z-index:20;
+ background:rgba(16,35,68,.96);color:white;
+ box-shadow:0 5px 20px #0002
+}
+.nav{
+ max-width:1200px;margin:auto;padding:12px 18px;
+ display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap
+}
+.logo{font-size:20px;font-weight:800}
+nav{display:flex;gap:7px;flex-wrap:wrap}
+nav a{
+ color:white;text-decoration:none;padding:8px 12px;border-radius:10px;
+ font-size:14px;background:#ffffff12
+}
+nav a:hover{background:#4f9cff}
+.container{max-width:1200px;margin:auto;padding:25px 16px}
+.hero{
+ background:linear-gradient(135deg,#164e8b,#5d39a8);
+ color:white;border-radius:24px;padding:42px 28px;margin:15px 0 25px;
+ box-shadow:0 15px 40px #253b7040
+}
+.hero h1{font-size:clamp(30px,5vw,52px);margin:0 0 12px}
+.hero p{font-size:18px;max-width:850px}
+.badge{display:inline-block;background:#ffffff20;border:1px solid #ffffff40;padding:7px 12px;border-radius:30px}
+.section{
+ background:white;border-radius:22px;padding:26px;margin:25px 0;
+ box-shadow:0 8px 30px #263b5a16
+}
+.section h2{margin-top:0;color:#164e8b}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
+.card{
+ background:#f7fbff;border:1px solid #dcecff;border-radius:17px;padding:18px
+}
+.formula{
+ background:#102344;color:#fff;border-radius:16px;padding:15px 18px;
+ font-size:22px;text-align:center;font-weight:700;margin:12px 0
+}
+.sim{
+ background:#101c30;border-radius:20px;padding:18px;color:white
+}
+canvas{
+ display:block;width:100%;height:auto;max-height:430px;
+ background:#081321;border-radius:14px
+}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:15px}
+.control{background:#ffffff12;padding:13px;border-radius:13px}
+label{display:block;font-weight:700;margin-bottom:6px}
+input[type=range]{width:100%;accent-color:#58a6ff}
+.value{color:#75d7ff;font-weight:800}
+button{
+ border:0;border-radius:11px;padding:10px 15px;cursor:pointer;
+ background:#2374d8;color:white;font-weight:700;margin:5px 4px 0 0
+}
+button:hover{filter:brightness(1.1)}
+.btn2{background:#6f42c1}
+.result{
+ margin-top:15px;background:#e9f6ff;border-left:5px solid #1684e8;
+ padding:14px;border-radius:10px
+}
+.warning{
+ background:#fff6dc;border-left:5px solid #f0a500;padding:14px;border-radius:10px
+}
+.example{
+ background:#f3efff;border-left:5px solid #7048d8;padding:15px;border-radius:10px
+}
+.graphbox{background:#f8fbff;border:1px solid #d9e8f8;padding:12px;border-radius:15px}
+.question{
+ border:1px solid #dce6f3;border-radius:14px;padding:16px;margin:13px 0
+}
+.question.correct{background:#e9fff0;border-color:#4caf70}
+.question.wrong{background:#fff0f0;border-color:#df6666}
+.option{
+ display:block;width:100%;text-align:left;margin:7px 0;
+ background:#eef5ff;color:#18304f
+}
+.feedback{font-weight:700;margin-top:8px}
+.score{
+ font-size:25px;font-weight:800;text-align:center;
+ padding:18px;border-radius:15px;background:#e9f7ff
+}
+footer{text-align:center;padding:30px;color:#637089}
+.small{font-size:14px;color:#64748b}
+ul{padding-left:22px}
+@media(max-width:650px){
+ .section{padding:18px}.hero{padding:28px 18px}
+ .formula{font-size:18px}.logo{width:100%}
+}
+</style>
+</head>
+<body>
+
+<header>
+<div class="nav">
+<div class="logo">⚙️ 10-sinf Fizika</div>
+<nav>
+<a href="#home">Bosh sahifa</a>
+<a href="#plan1">1-reja</a>
+<a href="#plan2">2-reja</a>
+<a href="#plan3">3-reja</a>
+<a href="#experiment">Tajriba</a>
+<a href="#graphs">Grafiklar</a>
+<a href="#test">Test</a>
+<a href="#xulosa">Xulosa</a>
+</nav>
+</div>
+</header>
+
+<main class="container" id="home">
+<section class="hero">
+<span class="badge">2-mavzu • Interaktiv elektron dars</span>
+<h1>Aylana bo‘ylab harakat va markazga intilma kuch</h1>
+<p>10-sinf o‘quvchilari uchun nazariya, formulalar, animatsiyalar, real vaqtli hisoblash, grafiklar va testlar bilan zamonaviy fizika darsi.</p>
+</section>
+
+<section class="section">
+<h2>📚 Dars rejalari</h2>
+<div class="grid">
+<div class="card"><h3>1. Aylana bo‘ylab tekis harakat va burchak tezlik</h3><p>Davr, chastota, burchak tezlik va chiziqli tezlik orasidagi bog‘lanishlarni o‘rganamiz.</p></div>
+<div class="card"><h3>2. Markazga intilma tezlanish va kuch</h3><p>Markazga intilma tezlanish va kuchning massa, tezlik va radiusga bog‘liqligini tekshiramiz.</p></div>
+<div class="card"><h3>3. Aylana bo‘ylab harakatning amaliy qo‘llanilishi</h3><p>Avtomobil, velosiped, karusel, sun’iy yo‘ldosh va boshqa misollarni tahlil qilamiz.</p></div>
+</div>
+</section>
+
+<section class="section" id="plan1">
+<h2>1-reja. Aylana bo‘ylab tekis harakat va burchak tezlik</h2>
+<div class="grid">
+<div class="card">
+<h3>📖 Nazariya</h3>
+<p>Jism aylana bo‘ylab bir xil tezlik bilan harakat qilsa, uning <b>modul bo‘yicha tezligi</b> o‘zgarmasligi mumkin, ammo tezlik vektorining yo‘nalishi doimo o‘zgaradi.</p>
+<p><b>Davr (T)</b> — jismning bir marta to‘liq aylanishiga ketgan vaqt.</p>
+<p><b>Chastota (f)</b> — bir sekunddagi aylanishlar soni.</p>
+<p><b>Burchak tezlik (ω)</b> — vaqt birligida burilish burchagini ifodalaydi.</p>
+</div>
+<div class="card">
+<h3>📌 Asosiy formulalar</h3>
+<div class="formula">f = 1 / T</div>
+<div class="formula">ω = 2 × π × f = 2 × π / T</div>
+<div class="formula">v = ω × r</div>
+<p class="small">Bu yerda: T — davr, f — chastota, ω — burchak tezlik, r — radius, v — chiziqli tezlik.</p>
+</div>
+</div>
+
+<div class="sim">
+<h3>🎮 Simulyatsiya: Aylanuvchi jism</h3>
+<canvas id="sim1" width="850" height="430"></canvas>
+<div class="controls">
+<div class="control"><label>Radius r: <span id="r1v" class="value"></span> m</label><input id="r1" type="range" min="1" max="5" step=".1" value="2.5"></div>
+<div class="control"><label>Davr T: <span id="t1v" class="value"></span> s</label><input id="t1" type="range" min=".5" max="8" step=".1" value="3"></div>
+</div>
+<div class="result" id="res1"></div>
+</div>
+</section>
+
+<section class="section" id="plan2">
+<h2>2-reja. Markazga intilma tezlanish va kuch</h2>
+<div class="grid">
+<div class="card">
+<h3>📖 Markazga intilma tezlanish</h3>
+<p>Aylana bo‘ylab harakatda tezlik vektorining yo‘nalishi o‘zgargani uchun jism tezlanishga ega bo‘ladi. Bu tezlanish aylananing markaziga yo‘nalgan.</p>
+<div class="formula">a<sub>c</sub> = v² / r</div>
+<p>Shuningdek:</p>
+<div class="formula">a<sub>c</sub> = ω² × r</div>
+</div>
+<div class="card">
+<h3>⚡ Markazga intilma kuch</h3>
+<p>Markazga intilma kuch — jismni aylana bo‘ylab harakatda ushlab turuvchi, markaz tomon yo‘nalgan natijaviy kuch.</p>
+<div class="formula">F<sub>c</sub> = m × a<sub>c</sub></div>
+<div class="formula">F<sub>c</sub> = m × v² / r</div>
+<p><b>v oshsa</b> kuch juda tez ortadi; <b>r oshsa</b> kuch kamayadi; <b>m oshsa</b> kuch ortadi.</p>
+</div>
+</div>
+
+<div class="sim">
+<h3>🎯 Simulyatsiya: Markazga intilma kuch</h3>
+<canvas id="sim2" width="850" height="430"></canvas>
+<div class="controls">
+<div class="control"><label>Massa m: <span id="m2v" class="value"></span> kg</label><input id="m2" type="range" min=".5" max="10" step=".5" value="2"></div>
+<div class="control"><label>Tezlik v: <span id="v2v" class="value"></span> m/s</label><input id="v2" type="range" min="1" max="20" step=".5" value="6"></div>
+<div class="control"><label>Radius r: <span id="r2v" class="value"></span> m</label><input id="r2" type="range" min="1" max="8" step=".1" value="3"></div>
+</div>
+<div class="result" id="res2"></div>
+</div>
+
+<div class="example">
+<b>🧠 Muhim:</b> Markazga intilma kuch alohida yangi kuch turi emas. U aylana bo‘ylab harakatni ta’minlayotgan natijaviy kuchning markaz tomon yo‘nalgan tarkibidir. Masalan, avtomobilda burilishda ishqalanish kuchi markazga intilma kuch vazifasini bajarishi mumkin.
+</div>
+</section>
+
+<section class="section" id="plan3">
+<h2>3-reja. Aylana bo‘ylab harakatning amaliy qo‘llanilishi</h2>
+<div class="grid">
+<div class="card"><h3>🚗 Avtomobil</h3><p>Avtomobil burilganda yo‘l bilan shina orasidagi ishqalanish avtomobilni burilish markaziga tomon yo‘naltiruvchi kuchni hosil qiladi.</p></div>
+<div class="card"><h3>🚲 Velosiped</h3><p>Velosipedchi burilishda muvozanatni saqlash uchun velosipedni burilish tomonga qiyalatadi.</p></div>
+<div class="card"><h3>🎠 Karusel</h3><p>Karuseldagi jism aylana bo‘ylab harakat qiladi. Uning tezlik vektori urinma bo‘ylab, markazga intilma tezlanishi esa markaz tomon yo‘naladi.</p></div>
+<div class="card"><h3>🛰️ Sun’iy yo‘ldosh</h3><p>Orbitadagi yo‘ldoshning egri trayektoriyasini Yerning tortishish kuchi ta’minlaydi.</p></div>
+</div>
+
+<div class="warning">
+<b>⚠️ Markazdan qochma kuch haqida:</b> Inersial sanoq sistemasida aylana bo‘ylab harakatni tushuntirish uchun markazga yo‘nalgan kuch yetarli. Aylanuvchi sanoq sistemasida esa jismga tashqariga yo‘nalgan <b>markazdan qochma (inertsiya) kuchi</b> kiritiladi.
+</div>
+
+<div class="sim">
+<h3>🚗 Interaktiv burilish simulyatsiyasi</h3>
+<canvas id="sim3" width="850" height="430"></canvas>
+<div class="controls">
+<div class="control"><label>Tezlik v: <span id="v3v" class="value"></span> m/s</label><input id="v3" type="range" min="2" max="25" step=".5" value="10"></div>
+<div class="control"><label>Massa m: <span id="m3v" class="value"></span> kg</label><input id="m3" type="range" min="500" max="2500" step="50" value="1200"></div>
+<div class="control"><label>Burilish radiusi r: <span id="r3v" class="value"></span> m</label><input id="r3" type="range" min="10" max="100" step="1" value="50"></div>
+</div>
+<div class="result" id="res3"></div>
+</div>
+</section>
+
+<section class="section" id="experiment">
+<h2>🧪 Tajriba qilib ko‘ring</h2>
+<p>Quyidagi qiymatlarni o‘zgartirib, markazga intilma kuch qanday o‘zgarishini kuzating.</p>
+<div class="controls">
+<div class="card"><label>Massa m = <span id="emv"></span> kg</label><input id="em" type="range" min="1" max="10" step=".5" value="2"></div>
+<div class="card"><label>Tezlik v = <span id="evv"></span> m/s</label><input id="ev" type="range" min="1" max="20" step=".5" value="4"></div>
+<div class="card"><label>Radius r = <span id="erv"></span> m</label><input id="er" type="range" min="1" max="10" step=".5" value="2"></div>
+</div>
+<div class="formula" id="expformula"></div>
+<div class="score" id="expresult"></div>
+<div class="example">Masalan, m = 2 kg, v = 4 m/s, r = 2 m bo‘lsa: F = 2 × 4² / 2 = <b>16 N</b>.</div>
+</section>
+
+<section class="section" id="graphs">
+<h2>📈 Grafiklar</h2>
+<div class="grid">
+<div class="graphbox">
+<h3>F ning tezlikka bog‘liqligi</h3>
+<canvas id="gV" width="520" height="300"></canvas>
+<p class="small">F ∼ v². Tezlik 2 marta oshsa, boshqa shartlar o‘zgarmasa, kuch 4 marta oshadi.</p>
+</div>
+<div class="graphbox">
+<h3>F ning radiusga bog‘liqligi</h3>
+<canvas id="gR" width="520" height="300"></canvas>
+<p class="small">F ∼ 1/r. Radius ortgani sari markazga intilma kuch kamayadi.</p>
+</div>
+</div>
+</section>
+
+<section class="section" id="test">
+<h2>📝 10 ta interaktiv test</h2>
+<div id="quiz"></div>
+<div class="score" id="finalScore">Natijangiz: testni yakunlang.</div>
+</section>
+
+<section class="section" id="xulosa">
+<h2>✅ Xulosa</h2>
+<ul>
+<li>Davr: <b>T</b>, chastota: <b>f = 1/T</b>.</li>
+<li>Burchak tezlik: <b>ω = 2 × π / T = 2 × π × f</b>.</li>
+<li>Chiziqli tezlik: <b>v = ω × r</b>.</li>
+<li>Markazga intilma tezlanish: <b>a<sub>c</sub> = v²/r</b>.</li>
+<li>Markazga intilma kuch: <b>F<sub>c</sub> = m × v²/r</b>.</li>
+<li>Tezlik oshishi kuchga kvadrat bo‘yicha ta’sir qiladi.</li>
+<li>Aylana bo‘ylab harakatda tezlik vektori urinma bo‘ylab, markazga intilma tezlanish va kuch esa markaz tomon yo‘naladi.</li>
+</ul>
+</section>
+</main>
+
+<footer>10-sinf Fizika • Interaktiv elektron dars • Markazga intilma kuch</footer>
+
+<script>
+const $=id=>document.getElementById(id);
+const pi=Math.PI;
+
+function setupRange(id,out,unit=''){
+ const el=$(id), o=$(out);
+ function u(){o.textContent=el.value+unit}
+ el.addEventListener('input',u);u(); return el;
+}
+
+const r1=setupRange('r1','r1v'), t1=setupRange('t1','t1v');
+const c1=$('sim1').getContext('2d'); let a1=0;
+
+function drawArrow(ctx,x1,y1,x2,y2,color,label){
+ ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=4;
+ ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+ const ang=Math.atan2(y2-y1,x2-x1);
+ ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-12*Math.cos(ang-.5),y2-12*Math.sin(ang-.5));
+ ctx.lineTo(x2-12*Math.cos(ang+.5),y2-12*Math.sin(ang+.5));ctx.closePath();ctx.fill();
+ if(label){ctx.font='bold 16px Arial';ctx.fillText(label,x2+8,y2+4)}
+}
+
+function loop1(){
+ const w=2*pi/+t1.value, rr=+r1.value, v=w*rr;
+ c1.clearRect(0,0,850,430);
+ const cx=425,cy=215,R=120+rr*18;
+ c1.strokeStyle='#496783';c1.lineWidth=2;c1.beginPath();c1.arc(cx,cy,R,0,2*pi);c1.stroke();
+ c1.fillStyle='#ffcf4a';c1.beginPath();c1.arc(cx,cy,7,0,2*pi);c1.fill();
+ const x=cx+R*Math.cos(a1),y=cy+R*Math.sin(a1);
+ c1.fillStyle='#5bd4ff';c1.beginPath();c1.arc(x,y,15,0,2*pi);c1.fill();
+ drawArrow(c1,x,y,x-70*Math.sin(a1),y+70*Math.cos(a1),'#62ff9a','v');
+ drawArrow(c1,x,y,cx+(x-cx)*.72,cy+(y-cy)*.72,'#ff6577','ω');
+ c1.fillStyle='white';c1.font='16px Arial';c1.fillText('Markaz',cx-30,cy+30);
+ c1.fillText('r',cx+(x-cx)/2-5,cy+(y-cy)/2-5);
+ $('res1').innerHTML=`<b>Hisoblash:</b> f = 1/T = ${ (1/+t1.value).toFixed(2)} Hz &nbsp; | &nbsp; ω = ${w.toFixed(2)} rad/s &nbsp; | &nbsp; v = ω × r = <b>${v.toFixed(2)} m/s</b>`;
+ a1+=w*.025;
+ requestAnimationFrame(loop1);
+}
+loop1();
+
+const m2=setupRange('m2','m2v'),v2=setupRange('v2','v2v'),r2=setupRange('r2','r2v');
+const c2=$('sim2').getContext('2d');let a2=0;
+function loop2(){
+ const m=+m2.value,v=+v2.value,r=+r2.value,F=m*v*v/r,ac=v*v/r;
+ c2.clearRect(0,0,850,430);const cx=425,cy=215,R=130+r*10;
+ c2.strokeStyle='#45627d';c2.lineWidth=2;c2.beginPath();c2.arc(cx,cy,R,0,2*pi);c2.stroke();
+ const x=cx+R*Math.cos(a2),y=cy+R*Math.sin(a2);
+ c2.fillStyle='#63d9ff';c2.beginPath();c2.arc(x,y,16,0,2*pi);c2.fill();
+ drawArrow(c2,x,y,cx+(x-cx)*.6,cy+(y-cy)*.6,'#ff4f69','F');
+ drawArrow(c2,x,y,x-60*Math.sin(a2),y+60*Math.cos(a2),'#68ff9a','v');
+ c2.fillStyle='white';c2.font='16px Arial';c2.fillText('F va a — markaz tomon',20,30);
+ $('res2').innerHTML=`a<sub>c</sub> = ${ac.toFixed(2)} m/s² &nbsp; | &nbsp; F<sub>c</sub> = m × v²/r = <b>${F.toFixed(2)} N</b>`;
+ a2+=.025*v/6;requestAnimationFrame(loop2);
+}
+loop2();
+
+const v3=setupRange('v3','v3v'),m3=setupRange('m3','m3v'),r3=setupRange('r3','r3v');
+const c3=$('sim3').getContext('2d');let a3=-1.2;
+function loop3(){
+ const v=+v3.value,m=+m3.value,r=+r3.value,F=m*v*v/r;
+ c3.clearRect(0,0,850,430);
+ const cx=425,cy=250,R=125;
+ c3.strokeStyle='#667b92';c3.lineWidth=40;c3.beginPath();c3.arc(cx,cy,R,0,2*pi);c3.stroke();
+ c3.strokeStyle='#dce3ea';c3.lineWidth=3;c3.beginPath();c3.arc(cx,cy,R,0,2*pi);c3.stroke();
+ const x=cx+R*Math.cos(a3),y=cy+R*Math.sin(a3);
+ c3.save();c3.translate(x,y);c3.rotate(a3+pi/2);
+ c3.fillStyle='#ffcc45';c3.fillRect(-28,-15,56,30);
+ c3.fillStyle='#5d6878';c3.fillRect(-17,-10,15,9);c3.fillRect(4,-10,15,9);
+ c3.restore();
+ drawArrow(c3,x,y,cx+(x-cx)*.55,cy+(y-cy)*.55,'#ff5b6e','Fc');
+ drawArrow(c3,x,y,x+70*Math.sin(a3),y-70*Math.cos(a3),'#72e8ff','v');
+ c3.fillStyle='#fff';c3.font='16px Arial';c3.fillText('Burilish markazi',cx-55,cy+8);
+ $('res3').innerHTML=`Markazga intilma kuch: <b>F = ${F.toFixed(0)} N</b>. Aylanuvchi sanoq sistemasida markazdan qochma kuch yo‘nalishi markazdan tashqariga qarama-qarshi bo‘ladi.`;
+ a3+=.008*v;requestAnimationFrame(loop3);
+}
+loop3();
+
+const em=setupRange('em','emv'),ev=setupRange('ev','evv'),er=setupRange('er','erv');
+function experiment(){
+ const m=+em.value,v=+ev.value,r=+er.value,F=m*v*v/r;
+ $('expformula').innerHTML=`F = m × v² / r = ${m} × ${v}² / ${r}`;
+ $('expresult').innerHTML=`F = <b>${F.toFixed(2)} N</b>`;
+}
+[em,ev,er].forEach(x=>x.addEventListener('input',experiment));experiment();
+
+function drawGraph(canvas,type){
+ const ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height;
+ ctx.clearRect(0,0,w,h);ctx.strokeStyle='#9bb0c8';ctx.lineWidth=1;
+ ctx.beginPath();ctx.moveTo(45,20);ctx.lineTo(45,h-40);ctx.lineTo(w-20,h-40);ctx.stroke();
+ ctx.strokeStyle='#2374d8';ctx.lineWidth=4;ctx.beginPath();
+ for(let i=0;i<=100;i++){
+   let x=45+(w-70)*i/100;
+   let val=type==='v'?Math.pow(i/100,2):1/(.08+.92*i/100);
+   let y=(h-55)-val*(h-75);
+   if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+ }
+ ctx.stroke();ctx.fillStyle='#253b55';ctx.font='14px Arial';
+ ctx.fillText(type==='v'?'Tezlik v →':'Radius r →',w-110,h-12);
+ ctx.fillText('F →',8,28);
+}
+drawGraph($('gV'),'v');drawGraph($('gR'),'r');
+
+const questions=[
+['Aylanish davri nimani bildiradi?',['Bir marta to‘liq aylanish vaqti','Bir sekunddagi aylanishlar soni','Jism massasi','Radius'],0],
+['Chastota qaysi formula bilan topiladi?',['f=T','f=1/T','f=T²','f=r/T'],1],
+['Burchak tezlik formulasi qaysi?',['ω=2×π/T','ω=T/r','ω=m×v','ω=r/T'],0],
+['Chiziqli tezlik qaysi formula bilan bog‘langan?',['v=ω×r','v=ω/r','v=r/ω','v=m×r'],0],
+['Markazga intilma tezlanish yo‘nalishi qanday?',['Tashqariga','Markaz tomon','Urinma bo‘ylab','Har doim yuqoriga'],1],
+['a_c = v²/r formuladan ko‘rinadiki, tezlik 2 marta oshsa a_c qanday o‘zgaradi?',['2 marta','4 marta','O‘zgarmaydi','2 marta kamayadi'],1],
+['Markazga intilma kuch formulasi qaysi?',['F=m×v/r','F=m×v²/r','F=m×r/v','F=v²/(m×r)'],1],
+['Avtomobil burilganda markazga intilma kuch vazifasini nima bajarishi mumkin?',['Ishqalanish kuchi','Faqat og‘irlik kuchi','Faqat elektr kuchi','Hech qanday kuch emas'],0],
+['Sun’iy yo‘ldoshning orbitada egri trayektoriyasini nima ta’minlaydi?',['Yerning tortishish kuchi','Faqat havo qarshiligi','Faqat ishqalanish','Magnit kuchi'],0],
+['Markazdan qochma kuch aylanuvchi sanoq sistemasida qaysi tomonga yo‘naladi?',['Markaz tomon','Markazdan tashqariga','Urinma bo‘ylab','Har doim pastga'],1]
+];
+const quiz=$('quiz');
+questions.forEach((q,i)=>{
+ const d=document.createElement('div');d.className='question';d.id='q'+i;
+ d.innerHTML=`<b>${i+1}. ${q[0]}</b>`;
+ q[1].forEach((op,j)=>{
+   const b=document.createElement('button');b.className='option';b.textContent=String.fromCharCode(65+j)+') '+op;
+   b.onclick=()=>{
+     if(d.dataset.done)return;
+     d.dataset.done='1';
+     if(j===q[2]){d.classList.add('correct');d.insertAdjacentHTML('beforeend','<div class="feedback">✅ To‘g‘ri!</div>');}
+     else{d.classList.add('wrong');d.insertAdjacentHTML('beforeend',`<div class="feedback">❌ Noto‘g‘ri. To‘g‘ri javob: ${q[1][q[2]]}</div>`);}
+     const done=document.querySelectorAll('.question[data-done]').length;
+     if(done===questions.length){
+       const correct=document.querySelectorAll('.question.correct').length;
+       $('finalScore').innerHTML=`Natijangiz: <b>${correct} / ${questions.length}</b> (${correct*10}%)`;
+     }
+   };
+   d.appendChild(b);
+ });
+ quiz.appendChild(d);
+});
+</script>
+</body>
+</html>
