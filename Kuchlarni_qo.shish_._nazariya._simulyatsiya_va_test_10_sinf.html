@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="uz"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kuchlarni qo'shish — simulyatsiya</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#eef3f6;--card:#fff;--ink:#12212b;--mut:#5b6b76;--line:#c3d0d8;--acc:#e8790c;--f1:#1f6fd1;--f2:#d43a3a;--mg:#2e9a4f;--n:#7a4bd1;--fr:#8a5a2b;--ok:#1b8a4a;--bad:#c62f2f}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1a21;--card:#16262f;--ink:#e6eef2;--mut:#93a5b0;--line:#33505f;--acc:#ff9a3c;--f1:#5aa2ff;--f2:#ff6b6b;--mg:#55d17a;--n:#a98bff;--fr:#d1a06a;--ok:#4fd88a;--bad:#ff6b6b}}
+:root[data-theme="dark"]{--bg:#0e1a21;--card:#16262f;--ink:#e6eef2;--mut:#93a5b0;--line:#33505f;--acc:#ff9a3c;--f1:#5aa2ff;--f2:#ff6b6b;--mg:#55d17a;--n:#a98bff;--fr:#d1a06a;--ok:#4fd88a;--bad:#ff6b6b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Trebuchet MS","Segoe UI",system-ui,sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px 6px;max-width:980px;margin:auto}
+h1{font-size:1.35rem;margin:0}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 12px}
+button:hover{border-color:var(--acc)}button:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+button.on{background:var(--acc);border-color:var(--acc);color:#111;font-weight:700}
+main{max-width:980px;margin:auto;padding:0 18px 28px}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.tabs button{border-radius:8px 8px 0 0;font-weight:700}
+.box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+canvas{width:100%;height:auto;display:block;background:var(--card);border:1px solid var(--line);border-radius:10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}}
+label{display:grid;grid-template-columns:110px 1fr 70px;gap:8px;align-items:center;margin:4px 0}
+label output{text-align:right;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--acc)}
+#p div{padding:2px 0;border-bottom:1px dashed var(--line)}
+.ok{color:var(--ok);font-weight:700}.bad{color:var(--bad);font-weight:700}
+.th{color:var(--mut);margin:6px 0}
+h2{font-size:1.2rem;margin:22px 0 8px}h3{font-size:1.02rem;margin:14px 0 4px}
+#nazariya p{margin:4px 0;max-width:75ch}
+table{border-collapse:collapse;width:100%;display:block;overflow-x:auto}
+td,th{border:1px solid var(--line);padding:5px 9px;text-align:left}
+.fm{background:var(--bg);border-left:4px solid var(--acc);padding:6px 10px;margin:6px 0;font-weight:700;overflow-x:auto}
+.q{margin:12px 0}.q p{margin:0 0 6px;font-weight:700}
+.q button{display:block;width:100%;text-align:left;margin:4px 0}
+.q button.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 20%,var(--card))}
+.q button.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 20%,var(--card))}
+.q .ex{color:var(--mut);margin-top:4px}
+#score{position:sticky;bottom:8px;text-align:center;font-weight:700}
+</style></head><body>
+<header><h1>Kuchlarni qo'shish</h1><button id="th" aria-label="Rejimni almashtirish">Qorong'i / yorug'</button></header>
+<main>
+<section class="box" id="nazariya">
+<h2 style="margin-top:0">Mavzu haqida ma'lumot (10-sinf)</h2>
+<h3>1. Kuch va uni qo'shish</h3>
+<p>Kuch — jismlarning bir-biriga ta'sirini ifodalovchi <b>vektor kattalik</b>: uning moduli (son qiymati), yo'nalishi va qo'yilish nuqtasi bor. SI birligi — nyuton (1 N = 1 kg·m/s²). Kuch dinamometr bilan o'lchanadi. Bir jismga bir necha kuch ta'sir qilsa, ularning umumiy ta'sirini beruvchi kuch <b>teng ta'sir etuvchi kuch</b> deyiladi va vektor yig'indi sifatida topiladi:</p>
+<div class="fm">R⃗ = F⃗₁ + F⃗₂ + … + F⃗ₙ</div>
+<h3>2. Muvozanatlashgan kuchlar</h3>
+<p>Kuchlarning vektor yig'indisi nolga teng bo'lsa (R⃗ = 0; koordinata shaklida ΣFₓ = 0 va ΣF_y = 0), kuchlar muvozanatlashgan. Inersial sanoq sistemasida jism <b>tinch turadi yoki tekis to'g'ri chiziqli harakat qiladi</b> (Nyutonning 1-qonuni), a = 0.</p>
+<p>Ikki kuch muvozanati: F₁ = F₂, yo'nalishlari qarama-qarshi, bitta to'g'ri chiziq bo'ylab. Uch kuch muvozanatida kuch vektorlaridan yasalgan uchburchak yopiq bo'ladi; ipga ikki tomondan osilgan yuk uchun Lami teoremasi: T₁/sin β = T₂/sin α = mg/sin(α + β).</p>
+<p>Eslatma: ta'sir va aks ta'sir kuchlari (Nyutonning 3-qonuni, F⃗₁₂ = −F⃗₂₁) turli jismlarga qo'yiladi, shuning uchun ular muvozanatlashmaydi.</p>
+<h3>3. Muvozanatlashmagan kuchlar</h3>
+<p>R⃗ ≠ 0 bo'lsa, jism tezlanish oladi (Nyutonning 2-qonuni). Tezlanish teng ta'sir etuvchi kuch bilan bir tomonga yo'nalgan:</p>
+<div class="fm">a⃗ = R⃗ / m,&nbsp;&nbsp; v = v₀ + a·t,&nbsp;&nbsp; x = x₀ + v₀·t + a·t²/2</div>
+<p>Og'irlik kuchi: F = mg (g ≈ 9,8 m/s²). Sirpanish ishqalanish kuchi: F_ishq = μN. Gorizontal sirtda N = mg, shuning uchun F_ishq = μmg.</p>
+<h3>4. Ikki kuchni qo'shish</h3>
+<div class="fm">R = √(F₁² + F₂² + 2F₁F₂·cos α),&nbsp;&nbsp; tg φ = F₂ sin α / (F₁ + F₂ cos α)</div>
+<table><tr><th>Burchak α</th><th>Teng ta'sir etuvchi kuch</th><th>Izoh</th></tr>
+<tr><td>0°</td><td>R = F₁ + F₂</td><td>maksimum</td></tr>
+<tr><td>90°</td><td>R = √(F₁² + F₂²)</td><td>Pifagor teoremasi</td></tr>
+<tr><td>180°</td><td>R = |F₁ − F₂|</td><td>minimum</td></tr></table>
+<p>Har doim |F₁ − F₂| ≤ R ≤ F₁ + F₂. Grafik usullar: <b>parallelogramm qoidasi</b> (R — umumiy nuqtadan chiqqan diagonal) va <b>uchburchak qoidasi</b> (F⃗₂ ning boshi F⃗₁ ning oxiriga qo'yiladi, R⃗ birinchining boshidan ikkinchining oxiriga o'tadi).</p>
+<h3>5. Ko'p kuchni qo'shish — proyeksiyalar usuli</h3>
+<div class="fm">Fₓ = F·cos α,&nbsp; F_y = F·sin α,&nbsp; Rₓ = ΣFₓ,&nbsp; R_y = ΣF_y,&nbsp; R = √(Rₓ² + R_y²),&nbsp; tg φ = R_y / Rₓ</div>
+<h3>6. Kuchning tashkil etuvchilari</h3>
+<p>Bitta kuchni ikki perpendikulyar yo'nalish bo'yicha ajratish (qo'shishga teskari amal). Gorizontga α burchak ostidagi F kuch uchun: Fₓ = F·cos α, F_y = F·sin α, tekshirish: √(Fₓ² + F_y²) = F.</p>
+<p><b>Qiya tekislik</b> (burchak α): mg ning tekislik bo'ylab tashkil etuvchisi F∥ = mg·sin α, tekislikka perpendikulyar tashkil etuvchisi F⊥ = mg·cos α; N = mg·cos α. Ishqalanishsiz a = g·sin α; ishqalanish bilan jism tg α &gt; μ bo'lsa sirpanadi, a = g(sin α − μ cos α). Yuqoriga tekis tortish kuchi F = mg(sin α + μ cos α).</p>
+</section>
+<h2>Simulyatsiya</h2>
+<div class="row tabs" id="tabs"></div>
+<div class="row" id="scenes"></div>
+<p class="th" id="theory"></p>
+<canvas id="c" width="800" height="420" aria-label="Simulyatsiya maydoni"></canvas>
+<div class="grid">
+ <div class="box"><div id="sl"></div><div class="row" id="bt"></div></div>
+ <div class="box"><div id="p"></div></div>
+</div>
+<h2>Mavzu bo'yicha test (10 ta savol)</h2>
+<section class="box" id="test"></section>
+<div id="score" class="box"></div>
+</main>
+<script>
+const $=q=>document.querySelector(q),cv=$('#c'),X=cv.getContext('2d'),G=9.8;
+const f=(n,d=2)=>n.toFixed(d).replace('.',','),rad=d=>d*Math.PI/180;
+const col=n=>getComputedStyle(document.documentElement).getPropertyValue('--'+n).trim();
+const V=id=>+$('#s_'+id).value;
+let tab=1,sc='kitob',st={},run=true,mode='par',last=0;
+
+// Strelka chizish (vektor)
+function arrow(x,y,dx,dy,c,t,w=4,dash){
+  if(Math.hypot(dx,dy)<3)return;
+  const a=Math.atan2(dy,dx),ex=x+dx,ey=y+dy;
+  X.save();X.strokeStyle=X.fillStyle=c;X.lineWidth=w;X.setLineDash(dash?[6,5]:[]);
+  X.beginPath();X.moveTo(x,y);X.lineTo(ex-8*Math.cos(a),ey-8*Math.sin(a));X.stroke();X.setLineDash([]);
+  X.beginPath();X.moveTo(ex,ey);X.lineTo(ex-15*Math.cos(a-.4),ey-15*Math.sin(a-.4));X.lineTo(ex-15*Math.cos(a+.4),ey-15*Math.sin(a+.4));X.fill();
+  if(t){X.font='600 14px "Trebuchet MS",sans-serif';const wd=X.measureText(t).width;
+    X.fillText(t,Math.min(Math.max(ex+(dx>=0?8:-wd-8),4),796-wd),Math.min(Math.max(ey+(dy>0?18:-8),16),414));}
+  X.restore();
+}
+const line=(x1,y1,x2,y2,c,w=2,d)=>{X.save();X.strokeStyle=c;X.lineWidth=w;X.setLineDash(d?[6,5]:[]);X.beginPath();X.moveTo(x1,y1);X.lineTo(x2,y2);X.stroke();X.restore()};
+const rect=(x,y,w,h,c)=>{X.fillStyle=c;X.fillRect(x,y,w,h)};
+const yn=b=>`Muvozanat: <span class="${b?'ok':'bad'}">${b?'HA':"YO'Q"}</span>`;
+const txt=(s,x,y,c)=>{X.fillStyle=c||col('ink');X.font='14px "Trebuchet MS",sans-serif';X.fillText(s,x,y)};
+
+const SC={
+kitob:{tab:1,name:'Stol ustidagi kitob',
+ th:"Kitobga mg (pastga) va N (yuqoriga) ta'sir qiladi. R⃗ = N⃗ + mg⃗ = 0, shuning uchun kitob tinch turadi.",
+ sl:[['m','Massa',.5,10,2,.5,'kg']],
+ draw(){const m=V('m'),W=m*G;rect(180,285,440,22,col('line'));rect(360,225,80,60,'#d9b24c');
+  arrow(400,255,0,W*1.4,col('mg'),'mg = '+f(W)+' N');arrow(400,255,0,-W*1.4,col('n'),'N = '+f(W)+' N');
+  return [`mg = m·g = ${f(m)}·${f(G,1)} = ${f(W)} N`,`N = mg = ${f(W)} N`,`ΣF = N − mg = 0`,'a = 0 m/s²',yn(1),
+  "Diqqat: N va mg turli jismlarga emas, bitta kitobga qo'yilgan — shuning uchun ular muvozanatlashadi. Ta'sir va aks ta'sir (3-qonun) esa turli jismlarga qo'yiladi."]}},
+arqon:{tab:1,name:'Arqon tortish',
+ th:"F₁ = F₂ bo'lsa R⃗ = 0 va arqon tezligi o'zgarmaydi. Teng bo'lmasa muvozanat buziladi.",
+ sl:[['F1','F₁ (chapga)',0,100,50,1,'N'],['F2','F₂ (o‘ngga)',0,100,50,1,'N']],
+ init(){st={x:0,v:0}},
+ step(dt){const a=(V('F2')-V('F1'))/20;st.v+=a*dt;st.x+=st.v*dt*40;if(Math.abs(st.x)>230){st.x=Math.sign(st.x)*230;st.v=0}},
+ draw(){const F1=V('F1'),F2=V('F2'),R=F2-F1;
+  line(400,120,400,300,col('mut'),2,1);line(130,200,670,200,col('fr'),6);
+  X.fillStyle=col('f2');X.fillRect(392+st.x,180,16,40);
+  txt('1-jamoa',130,250);txt('2-jamoa',600,250);
+  arrow(140,150,-F1*1.1,0,col('f1'),'F₁ = '+f(F1)+' N');arrow(660,150,F2*1.1,0,col('f2'),'F₂ = '+f(F2)+' N');
+  if(R)arrow(400,320,R*1.1,0,col('acc'),'R = '+f(Math.abs(R))+' N',6);
+  return [`R = F₂ − F₁ = ${f(F2)} − ${f(F1)} = ${f(R)} N`,`Tezlik v = ${f(st.v)} m/s`,yn(R===0&&st.v===0)+(R===0&&st.v!==0?' (tekis harakat)':''),R===0?'':"Muvozanat buzildi — arqon "+(R>0?"o‘ng":"chap")+" tomonga tezlanadi"]}},
+ip:{tab:1,name:'Ikki ipga osilgan yuk',
+ th:"Uch kuch (T₁, T₂, mg) muvozanatda: ΣFₓ = 0, ΣF_y = 0. Lami teoremasi: T₁/sin β = T₂/sin α = mg/sin(α+β).",
+ sl:[['m','Massa',.5,10,2,.5,'kg'],['al','α (chap ip)',15,60,40,1,'°'],['be','β (o‘ng ip)',15,60,30,1,'°']],
+ draw(){const m=V('m'),a=rad(V('al')),b=rad(V('be')),W=m*G,ta=Math.tan(a),tb=Math.tan(b);
+  const A=250,B=550,x=(B*tb+A*ta)/(ta+tb),y=40+(x-A)*ta,s=Math.sin(a+b),T1=W*Math.sin(b)/s,T2=W*Math.sin(a)/s;
+  rect(180,30,440,10,col('line'));line(A,40,x,y,col('fr'),3);line(B,40,x,y,col('fr'),3);
+  rect(x-22,y,44,34,'#d9b24c');const K=.9;
+  arrow(x,y,-T1*K*Math.cos(a),-T1*K*Math.sin(a),col('f1'),'T₁ = '+f(T1));
+  arrow(x,y,T2*K*Math.cos(b),-T2*K*Math.sin(b),col('f2'),'T₂ = '+f(T2));
+  arrow(x,y+17,0,W*K,col('mg'),'mg = '+f(W));
+  return [`ΣFₓ: T₁·cos α = T₂·cos β → ${f(T1*Math.cos(a))} = ${f(T2*Math.cos(b))}`,`ΣF_y: T₁·sin α + T₂·sin β = ${f(T1*Math.sin(a)+T2*Math.sin(b))} N`,`mg = ${f(W)} N`,`T₁ = ${f(T1)} N, T₂ = ${f(T2)} N`,yn(1)]}},
+arava:{tab:2,name:'Aravacha (Nyuton 2-qonuni)',rs:1,
+ th:"R⃗ ≠ 0 bo'lsa jism tezlanish oladi: a = R/m. Ishqalanish: F_ishq = μ·m·g. v = v₀ + at, x = x₀ + v₀t + at²/2.",
+ sl:[['F1','F₁ (o‘ngga)',0,100,50,1,'N'],['F2','F₂ (chapga)',0,100,20,1,'N'],['m','Massa',.5,20,5,.5,'kg'],['mu','μ',0,.6,.1,.01,'']],
+ btn:[['Tayyor masala (m=2, F₁=10, F₂=4)',()=>{setS({F1:10,F2:4,m:2,mu:0});resetSc();st.stop=5;run=true}]],
+ init(){st={x:0,v:0,t:0,a:0,fr:0}},
+ step(dt){const m=V('m'),F=V('F1')-V('F2'),fm=V('mu')*m*G,s=st;
+  if(s.v===0&&Math.abs(F)<=fm){s.a=0;s.fr=F}
+  else{const v0=s.v,d=v0!==0?Math.sign(v0):Math.sign(F);s.fr=fm*d;s.a=(F-s.fr)/m;s.v+=s.a*dt;
+   if(v0!==0&&Math.sign(s.v)!==Math.sign(v0)&&Math.abs(F)<=fm){s.v=0;s.a=0}}
+  s.x+=s.v*dt;s.t+=dt;if(s.stop&&s.t>=s.stop){run=false;s.stop=0;$('#run').textContent='Boshlash'}},
+ draw(){const s=st,F1=V('F1'),F2=V('F2'),m=V('m'),mu=V('mu'),F=F1-F2;
+  rect(0,300,800,120,col('line'));
+  for(let i=-2;i<20;i++){const px=((i*2-(s.x%2+2)%2)*40)+400;line(px,300,px,312,col('mut'),2)}
+  txt('bo‘linma = 1 m',20,330);rect(350,240,100,60,'#d9b24c');
+  arrow(450,270,F1*1.6,0,col('f1'),'F₁ = '+f(F1)+' N');arrow(350,270,-F2*1.6,0,col('f2'),'F₂ = '+f(F2)+' N');
+  const ff=mu*m*G;if(ff>0&&(s.v!==0||Math.abs(F)>ff||Math.abs(F)>0))arrow(400,318,-Math.sign(s.fr||F)*Math.min(Math.abs(s.fr),ff)*1.6,0,col('fr'),'F_ishq = '+f(Math.min(Math.abs(s.fr),ff))+' N',4);
+  const R=F-(s.v===0&&Math.abs(F)<=ff?F:s.fr);
+  return [`R = F₁ − F₂ − F_ishq = ${f(R)} N`,`a = R/m = ${f(R)}/${f(m)} = ${f(s.a)} m/s²`,`t = ${f(s.t)} s,  v = ${f(s.v)} m/s,  x = ${f(s.x)} m`,yn(Math.abs(R)<1e-9),
+  s.stop===0&&s.t>=5?`Tekshirish: a = 3 m/s², v = 15 m/s, x = 37,5 m`:'']}},
+qosh:{tab:3,name:"Ikki kuchni qo'shish",
+ th:"R = √(F₁² + F₂² + 2F₁F₂cos α). Chegara: |F₁ − F₂| ≤ R ≤ F₁ + F₂.",
+ sl:[['F1','F₁',0,100,40,1,'N'],['F2','F₂',0,100,30,1,'N'],['al','α',0,180,60,1,'°']],
+ btn:[['α = 0°',()=>setS({al:0})],['α = 90°',()=>setS({al:90})],['α = 180°',()=>setS({al:180})],['Parallelogramm / uchburchak',()=>{mode=mode==='par'?'tri':'par'}]],
+ draw(){const F1=V('F1'),F2=V('F2'),al=V('al'),a=rad(al),K=2.4,ox=150,oy=330;
+  const x1=F1*K,y1=0,x2=F2*K*Math.cos(a),y2=-F2*K*Math.sin(a);
+  const R=Math.sqrt(F1*F1+F2*F2+2*F1*F2*Math.cos(a)),phi=Math.atan2(F2*Math.sin(a),F1+F2*Math.cos(a))*180/Math.PI;
+  if(mode==='par'){line(ox+x1,oy,ox+x1+x2,oy+y2,col('mut'),2,1);line(ox+x2,oy+y2,ox+x1+x2,oy+y2,col('mut'),2,1);
+   arrow(ox,oy,x1,0,col('f1'),'F₁ = '+f(F1));arrow(ox,oy,x2,y2,col('f2'),'F₂ = '+f(F2));}
+  else{arrow(ox,oy,x1,0,col('f1'),'F₁ = '+f(F1));arrow(ox+x1,oy,x2,y2,col('f2'),'F₂ = '+f(F2));}
+  arrow(ox,oy,x1+x2,y2,col('acc'),'R = '+f(R)+' N',6);
+  txt(mode==='par'?'Parallelogramm qoidasi':'Uchburchak qoidasi',20,30);
+  return [`R = √(${f(F1)}² + ${f(F2)}² + 2·${f(F1)}·${f(F2)}·cos ${al}°)`,`R = ${f(R)} N`,`R ning F₁ bilan burchagi φ = ${f(phi,1)}°`,`Chegara: ${f(Math.abs(F1-F2))} ≤ R ≤ ${f(F1+F2)}`,
+  al===0?'α = 0°: R = F₁ + F₂ (maksimum)':al===180?'α = 180°: R = |F₁ − F₂| (minimum)':al===90?'α = 90°: R = √(F₁² + F₂²) (Pifagor)':'']}},
+ajr:{tab:3,name:'Kuchni tashkil etuvchilarga ajratish',
+ th:"Fₓ = F·cos α, F_y = F·sin α. Tekshirish: √(Fₓ² + F_y²) = F.",
+ sl:[['F','F',0,100,20,1,'N'],['al','α',0,90,30,1,'°']],
+ btn:[['Misol: 20 N, 30°',()=>setS({F:20,al:30})]],
+ draw(){const F=V('F'),al=V('al'),a=rad(al),K=3,ox=150,oy=340,Fx=F*Math.cos(a),Fy=F*Math.sin(a);
+  rect(0,oy,800,80,col('line'));
+  arrow(ox,oy,Fx*K,0,col('f1'),'Fₓ = '+f(Fx)+' N',4,1);arrow(ox,oy,0,-Fy*K,col('f2'),'F_y = '+f(Fy)+' N',4,1);
+  line(ox+Fx*K,oy,ox+Fx*K,oy-Fy*K,col('mut'),1,1);line(ox,oy-Fy*K,ox+Fx*K,oy-Fy*K,col('mut'),1,1);
+  arrow(ox,oy,Fx*K,-Fy*K,col('acc'),'F = '+f(F)+' N',6);
+  return [`Fₓ = F·cos α = ${f(F)}·cos ${al}° = ${f(Fx)} N`,`F_y = F·sin α = ${f(F)}·sin ${al}° = ${f(Fy)} N`,`√(Fₓ² + F_y²) = ${f(Math.hypot(Fx,Fy))} N = F ✓`]}},
+qiya:{tab:3,name:'Qiya tekislik',rs:1,
+ th:"mg ikkiga ajraladi: F∥ = mg·sin α (bo'ylab), F⊥ = mg·cos α (perpendikulyar). Jism tan α > μ bo'lsagina sirpanadi.",
+ sl:[['m','Massa',.5,10,2,.5,'kg'],['al','α',5,60,30,1,'°'],['mu','μ',0,1,.2,.01,'']],
+ init(){st={d:330,v:0}},
+ step(dt){const a=rad(V('al')),mu=V('mu');if(Math.tan(a)>mu){st.v+=G*(Math.sin(a)-mu*Math.cos(a))*dt;st.d-=st.v*dt*40;if(st.d<40){st.d=40;st.v=0;run=false;$('#run').textContent='Boshlash'}}},
+ draw(){const m=V('m'),al=V('al'),a=rad(al),mu=V('mu'),W=m*G,c=Math.cos(a),s=Math.sin(a),L=380,B=[640,370],T=[B[0]-L*c,B[1]-L*s];
+  X.fillStyle=col('line');X.beginPath();X.moveTo(B[0],B[1]);X.lineTo(T[0],T[1]);X.lineTo(T[0],B[1]);X.fill();
+  const d=Math.min(st.d,L-30),px=B[0]-d*c,py=B[1]-d*s,nx=s,ny=-c,cx=px+nx*22,cy=py+ny*22;
+  X.save();X.translate(px,py);X.rotate(-a);X.fillStyle='#d9b24c';X.fillRect(-30,-44,60,44);X.restore();
+  const K=1.1,slide=Math.tan(a)>mu,Ff=slide?mu*W*c:W*s;
+  arrow(cx,cy,0,W*K,col('mg'),'mg');arrow(cx,cy,nx*W*c*K,ny*W*c*K,col('n'),'N');
+  arrow(cx,cy,c*W*s*K,s*W*s*K,col('f1'),'F∥',3,1);arrow(cx,cy,-nx*W*c*K,-ny*W*c*K,col('f2'),'F⊥',3,1);
+  if(Ff>0.5)arrow(cx,cy,-c*Ff*K,-s*Ff*K,col('fr'),'F_ishq',4);
+  const a2=slide?G*(s-mu*c):0;
+  return [`F∥ = mg·sin α = ${f(W*s)} N,  F⊥ = mg·cos α = ${f(W*c)} N`,`N = ${f(W*c)} N,  F_ishq = ${f(Ff)} N`,slide?`tan α = ${f(Math.tan(a))} > μ → sirpanadi, a = g(sin α − μcos α) = ${f(a2)} m/s²`:`tan α = ${f(Math.tan(a))} ≤ μ → jism tinch (F∥ = F_ishq)`,`Chegaraviy burchak α₀ = arctan μ = ${f(Math.atan(mu)*180/Math.PI,1)}°`,`Tekis tortish uchun: F = mg(sin α + μcos α) = ${f(W*(s+mu*c))} N`,`v = ${f(st.v)} m/s`]}}
+};
+const TABS={1:'1. Muvozanatlashgan',2:'2. Muvozanatlashmagan',3:"3. Teng ta'sir etuvchi va tashkil etuvchilar"};
+
+function setS(o){for(const k in o){$('#s_'+k).value=o[k];$('#s_'+k).dispatchEvent(new Event('input'))}}
+function resetSc(){SC[sc].init?SC[sc].init():st={}}
+function build(){
+  $('#tabs').innerHTML=Object.keys(TABS).map(t=>`<button data-t="${t}" class="${t==tab?'on':''}">${TABS[t]}</button>`).join('');
+  $('#scenes').innerHTML=Object.keys(SC).filter(k=>SC[k].tab==tab).map(k=>`<button data-s="${k}" class="${k==sc?'on':''}">${SC[k].name}</button>`).join('');
+  const S=SC[sc];$('#theory').textContent=S.th;
+  $('#sl').innerHTML=S.sl.map(([id,l,mn,mx,v,stp,u])=>`<label>${l}<input type="range" id="s_${id}" min="${mn}" max="${mx}" step="${stp}" value="${v}"><output id="o_${id}"></output></label>`).join('');
+  S.sl.forEach(([id,,, ,,stp,u])=>{const el=$('#s_'+id),o=$('#o_'+id),upd=()=>o.textContent=f(+el.value,stp<1?(stp<.1?2:1):0)+' '+u;upd();
+    el.addEventListener('input',()=>{upd();if(S.rs)resetSc()})});
+  $('#bt').innerHTML=`<button id="run">${S.step?'To‘xtatish':'Yangilash'}</button><button id="rst">Qayta boshlash</button>`+(S.btn||[]).map((b,i)=>`<button data-b="${i}">${b[0]}</button>`).join('');
+  run=!!S.step&&!S.rs;if(S.rs&&S.step)run=false;$('#run').textContent=run?'To‘xtatish':'Boshlash';
+  if(!S.step)$('#run').style.display='none';
+  resetSc();
+}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.t){tab=+b.dataset.t;sc=Object.keys(SC).find(k=>SC[k].tab==tab);build()}
+  else if(b.dataset.s){sc=b.dataset.s;build()}
+  else if(b.dataset.b!==undefined)SC[sc].btn[+b.dataset.b][1]();
+  else if(b.id==='run'){run=!run;b.textContent=run?'To‘xtatish':'Boshlash'}
+  else if(b.id==='rst'){resetSc();if(SC[sc].step){run=!SC[sc].rs;$('#run').textContent=run?'To‘xtatish':'Boshlash'}}
+  else if(b.id==='th'){const r=document.documentElement,d=getComputedStyle(r).getPropertyValue('--bg').trim()==='#0e1a21';r.dataset.theme=d?'light':'dark'}
+});
+function frame(t){const dt=Math.min((t-last)/1000||0,.05);last=t;const S=SC[sc];
+  if(run&&S.step)S.step(dt);
+  X.clearRect(0,0,800,420);X.fillStyle=col('card');X.fillRect(0,0,800,420);
+  const lines=S.draw();$('#p').innerHTML=lines.filter(Boolean).map(l=>`<div>${l}</div>`).join('');
+  requestAnimationFrame(frame)}
+build();requestAnimationFrame(frame);
+</script>
+<script>
+// Test savollari: [savol, [variantlar], to'g'ri indeks, izoh]
+const Q=[
+["Kuch qanday fizik kattalik?",["Skalyar kattalik","Vektor kattalik","Faqat son qiymati bor kattalik","O'lchov birligi yo'q kattalik"],1,"Kuchning moduli, yo'nalishi va qo'yilish nuqtasi bor — u vektor kattalik. Birligi: N."],
+["Bir jismga bir to'g'ri chiziq bo'ylab qarama-qarshi tomonga 7 N va 4 N kuch ta'sir qiladi. Teng ta'sir etuvchi kuch nimaga teng?",["11 N","3 N","28 N","5,5 N"],1,"R = |F₁ − F₂| = 7 − 4 = 3 N (kattasi tomonga)."],
+["O'zaro perpendikulyar F₁ = 6 N va F₂ = 8 N kuchlarning teng ta'sir etuvchisi qancha?",["14 N","2 N","10 N","48 N"],2,"R = √(6² + 8²) = √100 = 10 N (Pifagor teoremasi)."],
+["Jismga ta'sir qiluvchi kuchlar muvozanatlashgan (R⃗ = 0) bo'lsa, jism qanday harakatlanadi?",["Tezlanish bilan harakatlanadi","Tinch turadi yoki tekis to'g'ri chiziqli harakatlanadi","Faqat tinch turadi","Tezligi doimo ortib boradi"],1,"Nyutonning 1-qonuni: R⃗ = 0 bo'lsa a = 0, tezlik o'zgarmaydi."],
+["Massasi 2 kg bo'lgan jismga R = 6 N teng ta'sir etuvchi kuch ta'sir qiladi. Tezlanishi qancha?",["3 m/s²","12 m/s²","0,33 m/s²","8 m/s²"],0,"a = R/m = 6/2 = 3 m/s²."],
+["Orasidagi burchak 60° bo'lgan ikkita 10 N kuchning teng ta'sir etuvchisi qancha (taxminan)?",["20 N","17,3 N","14,1 N","10 N"],1,"R = √(10² + 10² + 2·10·10·cos 60°) = √300 ≈ 17,3 N."],
+["Gorizontga 30° burchak ostida yo'nalgan 20 N kuchning vertikal tashkil etuvchisi F_y qancha?",["10 N","17,3 N","20 N","34,6 N"],0,"F_y = F·sin α = 20·sin 30° = 10 N. (Fₓ = 20·cos 30° ≈ 17,3 N.)"],
+["Ishqalanishsiz 30° li qiya tekislikda jism qanday tezlanish bilan sirpanadi? (g = 9,8 m/s²)",["9,8 m/s²","4,9 m/s²","8,5 m/s²","2,45 m/s²"],1,"a = g·sin α = 9,8·0,5 = 4,9 m/s²."],
+["Ikki kuch orasidagi qaysi burchakda teng ta'sir etuvchi kuch eng kichik bo'ladi?",["0°","90°","180°","45°"],2,"α = 180° da kuchlar qarama-qarshi: R = |F₁ − F₂| — minimum."],
+["Massasi 4 kg jism gorizontal stol ustida tinch turibdi. Tayanch reaksiya kuchi N qancha? (g = 10 m/s²)",["4 N","14 N","10 N","40 N"],3,"Jism tinch: N = mg = 4·10 = 40 N."]
+];
+let sc2=0,ans=0;
+const T=document.getElementById('test'),S2=document.getElementById('score');
+function scoreTxt(){S2.textContent=ans<Q.length?`Javob berilgan: ${ans} / ${Q.length}. To'g'ri: ${sc2}`:`Natija: ${sc2} / ${Q.length} (${sc2*10}%) — ${sc2>=9?"a'lo":sc2>=7?"yaxshi":sc2>=5?"qoniqarli":"mavzuni qayta ko'rib chiqing"}`}
+function renderT(){sc2=0;ans=0;
+  T.innerHTML=Q.map((q,i)=>`<div class="q" data-i="${i}"><p>${i+1}. ${q[0]}</p>`+q[1].map((o,j)=>`<button data-q="${i}" data-o="${j}">${'ABCD'[j]}) ${o}</button>`).join('')+`<div class="ex"></div></div>`).join('')+`<button id="tr">Testni qayta topshirish</button>`;scoreTxt()}
+T.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.id==='tr'){renderT();return}
+  const i=+b.dataset.q,o=+b.dataset.o,box=b.parentNode;if(box.dataset.done)return;box.dataset.done=1;
+  box.querySelectorAll('button').forEach(x=>{const j=+x.dataset.o;if(j===Q[i][2])x.classList.add('right');else if(j===o)x.classList.add('wrong');x.disabled=true});
+  if(o===Q[i][2])sc2++;ans++;
+  box.querySelector('.ex').textContent=(o===Q[i][2]?"To'g'ri. ":"Noto'g'ri. ")+Q[i][3];scoreTxt()});
+renderT();
+</script></body></html>
